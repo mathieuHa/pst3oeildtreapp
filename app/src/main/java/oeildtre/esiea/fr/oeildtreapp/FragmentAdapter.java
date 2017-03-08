@@ -1,8 +1,5 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
-/**
- * Created by Max on 08/03/2017.
- */
 
 import java.util.List;
 
