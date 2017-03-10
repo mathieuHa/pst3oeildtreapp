@@ -1,17 +1,33 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.NotificationCompat;
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 public class Fragments extends FragmentActivity {
 
     private PagerAdapter mPagerAdapter;
+    public static final String UPDATES="UPDATES";
+    public JSONArray values;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,4 +51,5 @@ public class Fragments extends FragmentActivity {
         pager.setAdapter(this.mPagerAdapter);
     }
 }
+
 

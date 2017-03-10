@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="20dp"
-        android:text="Graphe/Day " />
+        android:text="Graph/Day " />
 
     <ImageView
         android:id="@+id/img_day"
