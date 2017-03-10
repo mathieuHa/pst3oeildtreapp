@@ -20,6 +20,7 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,14 +33,25 @@ import java.util.List;
 
 public class FragYear extends Fragment {
     public static final String UPDATES="UPDATES";
-    private JSONArray array;
+    private JSONArray arr;
+    private JSONObject obj = new JSONObject();
+    private String sensor;
+    private Sensor sensorList;
 
-    public class BierUpdate extends BroadcastReceiver {
+
+    public class Update extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
                 Log.d("OK", "Callback de Mathieu");
-                array = getBiersFromFile();
+                arr = getBiersFromFile();
+                for (int i = 0; i < arr.length(); i++) {
+                    try {
+                        sensorList.setAlObject(arr.getJSONObject(i));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
@@ -66,20 +78,69 @@ public class FragYear extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        GraphService.startActionFoo(getContext(),"sensors","");
+        IntentFilter inF = new IntentFilter(UPDATES);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new Update(),inF);
         View year = inflater.inflate(R.layout.graphe_year, container, false);
 
         String time ="10";
         final CheckBox temp = (CheckBox) year.findViewById(R.id.temp);
-        temp.setChecked(true);
         final CheckBox humi = (CheckBox) year.findViewById(R.id.humi);
-        final CheckBox son = (CheckBox) year.findViewById(R.id.son);
-        final CheckBox lum = (CheckBox) year.findViewById(R.id.lum);
+        final CheckBox son  = (CheckBox) year.findViewById(R.id.son);
+        final CheckBox lum  = (CheckBox) year.findViewById(R.id.lum);
+        temp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                humi.setChecked(false);
+                son.setChecked(false);
+                lum.setChecked(false);
+                sensor = "température";
+                for (JSONObject obj : sensorList.getAl()){
+                    try {
+                        if (obj.get("name") == sensor){
+                            GraphService.startActionFoo(getContext(),"sensors","/"+obj.get("id")+"/dailydata/year?year=2017");
+                            IntentFilter inF = new IntentFilter(UPDATES);
+                            LocalBroadcastManager.getInstance(getContext()).registerReceiver(new Update(),inF);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        });
+        lum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                humi.setChecked(false);
+                son.setChecked(false);
+                temp.setChecked(false);
+                sensor = "luminosité";
+            }
+        });
+        humi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                temp.setChecked(false);
+                son.setChecked(false);
+                lum.setChecked(false);
+                sensor = "humidité";
+            }
+        });
+        son.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                humi.setChecked(false);
+                temp.setChecked(false);
+                lum.setChecked(false);
+                sensor = "son";
+            }
+        });
         ArrayList<CheckBox> cb = new ArrayList<CheckBox>();
         cb.add(temp);cb.add(humi);cb.add(son);cb.add(lum);
 
-        GraphService.startActionFoo(getContext(),"","");
-        IntentFilter inF = new IntentFilter(UPDATES);
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new BierUpdate(),inF);
+
+
 
 
         for (CheckBox box : cb){

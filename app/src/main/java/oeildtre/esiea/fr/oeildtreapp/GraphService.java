@@ -73,8 +73,7 @@ public class GraphService extends IntentService {
             final String action = intent.getAction();
             if (ACTION_FOO.equals(action)) {
                 final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1, param2);
+                handleActionFoo(param1);
             } else if (ACTION_BAZ.equals(action)) {
                 final String param1 = intent.getStringExtra(EXTRA_PARAM1);
                 final String param2 = intent.getStringExtra(EXTRA_PARAM2);
@@ -87,18 +86,18 @@ public class GraphService extends IntentService {
      * Handle action Foo in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionFoo(String param1, String param2) {
+    private void handleActionFoo(String param1) {
         Log.d("Max","Thread service name : " + Thread.currentThread().getName());
         URL url = null;
         try {
-            url = new URL ("http://90.92.227.92/pst3oeildtre/web/app.php/sensors");
+            url = new URL ("http://90.92.227.92/pst3oeildtre/web/app.php/"+param1);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
             if (HttpURLConnection.HTTP_OK == connection.getResponseCode()){
                 copyInputStreamToFile(connection.getInputStream(),
                         new File(getCacheDir(), "/sensors.json"));
-                Log.d("Max","sensors DL");
+                Log.d("Max",param1+"/"+"DL");
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
