@@ -27,7 +27,9 @@ public class GraphService extends IntentService {
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     private static final String ACTION_FOO = "oeildtre.esiea.fr.oeildtreapp.action.FOO";
-    private static final String ACTION_BAZ = "oeildtre.esiea.fr.oeildtreapp.action.BAZ";
+    private static final String ACTION_BAZ1 = "oeildtre.esiea.fr.oeildtreapp.action.BAZ1";
+    private static final String ACTION_BAZ2 = "oeildtre.esiea.fr.oeildtreapp.action.BAZ2";
+    private static final String ACTION_BAZ3 = "oeildtre.esiea.fr.oeildtreapp.action.BAZ3";
 
     // TODO: Rename parameters
     private static final String EXTRA_PARAM1 = "oeildtre.esiea.fr.oeildtreapp.extra.PARAM1";
@@ -59,9 +61,23 @@ public class GraphService extends IntentService {
      * @see IntentService
      */
     // TODO: Customize helper method
-    public static void startActionBaz(Context context, String param1, String param2) {
+    public static void startActionBaz1(Context context, String param1, String param2) {
         Intent intent = new Intent(context, GraphService.class);
-        intent.setAction(ACTION_BAZ);
+        intent.setAction(ACTION_BAZ1);
+        intent.putExtra(EXTRA_PARAM1, param1);
+        intent.putExtra(EXTRA_PARAM2, param2);
+        context.startService(intent);
+    }
+    public static void startActionBaz2(Context context, String param1, String param2) {
+        Intent intent = new Intent(context, GraphService.class);
+        intent.setAction(ACTION_BAZ2);
+        intent.putExtra(EXTRA_PARAM1, param1);
+        intent.putExtra(EXTRA_PARAM2, param2);
+        context.startService(intent);
+    }
+    public static void startActionBaz3(Context context, String param1, String param2) {
+        Intent intent = new Intent(context, GraphService.class);
+        intent.setAction(ACTION_BAZ3);
         intent.putExtra(EXTRA_PARAM1, param1);
         intent.putExtra(EXTRA_PARAM2, param2);
         context.startService(intent);
@@ -75,10 +91,18 @@ public class GraphService extends IntentService {
                 final String param1 = intent.getStringExtra(EXTRA_PARAM1);
                 final String param2 = intent.getStringExtra(EXTRA_PARAM2);
                 handleActionFoo(param1,param2);
-            } else if (ACTION_BAZ.equals(action)) {
+            } else if (ACTION_BAZ1.equals(action)) {
                 final String param1 = intent.getStringExtra(EXTRA_PARAM1);
                 final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionBaz(param1, param2);
+                handleActionBaz1(param1, param2);
+            } else if (ACTION_BAZ2.equals(action)) {
+                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
+                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
+                handleActionBaz2(param1, param2);
+            } else if (ACTION_BAZ3.equals(action)) {
+                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
+                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
+                handleActionBaz3(param1, param2);
             }
         }
     }
@@ -91,13 +115,13 @@ public class GraphService extends IntentService {
         Log.d("Max","Thread service name : " + Thread.currentThread().getName());
         URL url = null;
         try {
-            url = new URL ("http://77.202.45.104/pst3oeildtre/web/app.php/"+param1+param2);
+            url = new URL ("http://90.92.227.92/pst3oeildtre/web/app.php/"+param1);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
             if (HttpURLConnection.HTTP_OK == connection.getResponseCode()){
                 copyInputStreamToFile(connection.getInputStream(),
-                        new File(getCacheDir(), "/"+param1+param2+".json"));
+                        new File(getCacheDir(), "/"+param1+".json"));
                 Log.d("Max",param1+param2+" DL");
             }
         } catch (MalformedURLException e) {
@@ -105,7 +129,8 @@ public class GraphService extends IntentService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_SENSOR));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Fragments.UPDATES_SENSOR));
+
     }
     private void copyInputStreamToFile (InputStream in, File file){
         try {
@@ -128,17 +153,18 @@ public class GraphService extends IntentService {
      * Handle action Baz in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionBaz(String param1, String param2) {
+    private void handleActionBaz1(String param1, String param2) {
         Log.d("Max","Thread service name : " + Thread.currentThread().getName());
         URL url = null;
         try {
-            url = new URL ("http://77.202.45.104/pst3oeildtre/web/app.php/"+param1+param2);
+            url = new URL ("http://90.92.227.92/pst3oeildtre/web/app.php/"+param1+param2);
+            Log.e("coq",url.toString());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
             if (HttpURLConnection.HTTP_OK == connection.getResponseCode()){
                 copyInputStreamToFile(connection.getInputStream(),
-                        new File(getCacheDir(), "/"+param1+param2+".json"));
+                        new File(getCacheDir(), "/sensors_data1.json"));
                 Log.d("Max",param1+param2+" DL");
             }
         } catch (MalformedURLException e) {
@@ -146,7 +172,49 @@ public class GraphService extends IntentService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_DATA));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_DATA1));
+    }
+    private void handleActionBaz2(String param1, String param2) {
+        Log.d("Max","Thread service name : " + Thread.currentThread().getName());
+        URL url = null;
+        try {
+            url = new URL ("http://90.92.227.92/pst3oeildtre/web/app.php/"+param1+param2);
+            Log.e("coq",url.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            if (HttpURLConnection.HTTP_OK == connection.getResponseCode()){
+                copyInputStreamToFile(connection.getInputStream(),
+                        new File(getCacheDir(), "/sensors_data2.json"));
+                Log.d("Max",param1+param2+" DL");
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragMonth.UPDATES_DATA2));
+    }
+    private void handleActionBaz3(String param1, String param2) {
+        Log.d("Max","Thread service name : " + Thread.currentThread().getName());
+        URL url = null;
+        try {
+            url = new URL ("http://90.92.227.92/pst3oeildtre/web/app.php/"+param1+param2);
+            Log.e("coq",url.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            if (HttpURLConnection.HTTP_OK == connection.getResponseCode()){
+                copyInputStreamToFile(connection.getInputStream(),
+                        new File(getCacheDir(), "/sensors_data3.json"));
+                Log.d("Max",param1+param2+" DL");
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_DATA3));
     }
 }
 

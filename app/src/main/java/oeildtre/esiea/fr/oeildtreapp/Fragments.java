@@ -30,6 +30,8 @@ public class Fragments extends FragmentActivity {
     private PagerAdapter mPagerAdapter;
     public JSONArray values;
 
+    public static final String UPDATES_SENSOR="UPDATES_SENSOR";
+    public static final String UPDATES_DATA="UPDATES_DATA";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -44,6 +46,8 @@ public class Fragments extends FragmentActivity {
         fragments.add(Fragment.instantiate(this,FragDay.class.getName()));
         fragments.add(Fragment.instantiate(this,FragMonth.class.getName()));
         fragments.add(Fragment.instantiate(this,FragYear.class.getName()));
+        GraphService.startActionFoo(getApplicationContext(),"sensors","");
+
 
         // Création de l'adapter qui s'occupera de l'affichage de la liste de
         // Fragments

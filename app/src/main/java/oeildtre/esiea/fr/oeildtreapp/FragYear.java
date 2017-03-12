@@ -29,11 +29,12 @@ import java.io.InputStream;
 
 public class FragYear extends Fragment {
     public static final String UPDATES_SENSOR="UPDATES_SENSOR";
-    public static final String UPDATES_DATA="UPDATES_DATA";
+    public static final String UPDATES_DATA3="UPDATES_DATA";
     private JSONArray list_obj, list_data;
     private String sensor;
     private String link;
-    private Sensor sensorList;
+    private String graph="0";
+    private boolean fini = false;
 
 
     public class UpdateSensor extends BroadcastReceiver {
@@ -41,7 +42,13 @@ public class FragYear extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
                 list_obj = getFromFile("sensors","");
-                Log.e("OK", list_obj.toString());
+                Log.d("FY.USensor", list_obj.toString());
+                try {
+                    Log.i("Test",list_obj.getJSONObject(0).toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                fini = true;
             }
         }
     }
@@ -49,14 +56,26 @@ public class FragYear extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
-                list_data = getFromFile("sensors", link);
-                Log.d("D'acc", list_data.toString());
+                graph="0";
+                list_data = getFromFile("sensors", "_data3");
+                Log.d("FD.UData", list_data.toString());
+                for(int i = 0; i<list_data.length();i++){
+                    try {
+                        graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Log.v("Graph", graph);
+                final ImageView img = (ImageView) getActivity().findViewById(R.id.img_year);
+                Picasso.with(getActivity()).load(
+                        "http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
+                                "&chd=t:"+graph+"&chl=time").into(img);
             }
         }
     }
     public JSONArray getFromFile(String param1,String param2) {
         try {
-            Log.e("coco",getActivity().getCacheDir() + "/"+param1+param2+".json" );
             InputStream is = new FileInputStream(getActivity().getCacheDir() + "/"+param1+param2+".json");
             byte[] buffer = new byte[is.available()];
             is.read(buffer);
@@ -80,9 +99,11 @@ public class FragYear extends Fragment {
                              Bundle savedInstanceState) {
 
         View year = inflater.inflate(R.layout.graphe_year, container, false);
-        GraphService.startActionFoo(getContext(),"sensors","");
+
+
         IntentFilter inF = new IntentFilter(UPDATES_SENSOR);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateSensor(),inF);
+
 
         String time ="10";
         final CheckBox temp = (CheckBox) year.findViewById(R.id.temp);
@@ -92,81 +113,105 @@ public class FragYear extends Fragment {
         temp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                humi.setChecked(false);
-                son.setChecked(false);
-                lum.setChecked(false);
-                sensor = "température";
-                for (int i=0; i<list_obj.length(); i++){
-                    try {
-                        if (list_obj.getJSONObject(i).getString("name").equals(sensor)){
-                            link = "/"+list_obj.getJSONObject(i).getString("id")+"/dailydata/year?year=2017";
+                if(fini == true && temp.isChecked()) {
+                    humi.setChecked(false);
+                    son.setChecked(false);
+                    lum.setChecked(false);
+                    sensor = "température";
+                    for (int i = 0; i < list_obj.length(); i++) {
+                        try {
+                            if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
 
-                            GraphService.startActionBaz(getContext(),"sensors",link);
-                            IntentFilter inFi = new IntentFilter(UPDATES_DATA);
-                            LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateData(),inFi);
+                                GraphService.startActionBaz3(getContext(), "sensors", link);
 
-                            Log.e("Lol","On essaye");
+                                Log.e("FD.Temp", "On essaye");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
 
+                    }
                 }
             }
         });
         lum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                humi.setChecked(false);
-                son.setChecked(false);
-                temp.setChecked(false);
-                sensor = "luminosité";
+                if (fini == true && lum.isChecked()){
+                    humi.setChecked(false);
+                    son.setChecked(false);
+                    temp.setChecked(false);
+                    sensor = "luminosité";
+
+                    for (int i = 0; i < list_obj.length(); i++) {
+                        try {
+                            if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
+
+                                GraphService.startActionBaz3(getContext(), "sensors", link);
+
+                                Log.e("Lol", "On essaye");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
         });
         humi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                temp.setChecked(false);
-                son.setChecked(false);
-                lum.setChecked(false);
-                sensor = "humidité";
+                if (fini == true && humi.isChecked()) {
+                    temp.setChecked(false);
+                    son.setChecked(false);
+                    lum.setChecked(false);
+                    sensor = "humidité";
+
+                    for (int i = 0; i < list_obj.length(); i++) {
+                        try {
+                            if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
+
+                                GraphService.startActionBaz3(getContext(), "sensors", link);
+
+                                Log.e("Lol", "On essaye");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
         });
         son.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                humi.setChecked(false);
-                temp.setChecked(false);
-                lum.setChecked(false);
-                sensor = "son";
+                if (fini == true && son.isChecked()) {
+                    humi.setChecked(false);
+                    temp.setChecked(false);
+                    lum.setChecked(false);
+                    sensor = "son";
+
+                    for (int i = 0; i < list_obj.length(); i++) {
+                        try {
+                            if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
+
+                                GraphService.startActionBaz3(getContext(), "sensors", link);
+
+                                Log.e("Lol", "On essaye");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
         });
-
-        /*ArrayList<CheckBox> cb = new ArrayList<CheckBox>();
-        cb.add(temp);cb.add(humi);cb.add(son);cb.add(lum);
-
-
-
-
-
-        for (CheckBox box : cb){
-            if(box.isChecked()) {
-                for (int i = 0; i < 365; i += 1)
-                    time = time + "," + (int) (Math.random() * 20);
-                Log.e("time", time);
-            }
-        }
-        try {
-            URL url = new URL("http://90.92.227.92/pst3oeildtre/web/app.php/sensors/1/data/day?day=19&month=2&year=2017");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }*/
-
-
-        final ImageView img = (ImageView) year.findViewById(R.id.img_year);
-        Picasso.with(getActivity()).load(
-                "http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
-                        "&chd=t:"+time+"&chl=time").into(img);
+        IntentFilter inFi = new IntentFilter(UPDATES_DATA3);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateData(), inFi);
         return year;
     }
 }
