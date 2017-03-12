@@ -26,7 +26,6 @@ import java.net.URL;
 public class GraphService extends IntentService {
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private VariablesGlobales vg;
     private static final String ACTION_FOO = "oeildtre.esiea.fr.oeildtreapp.action.FOO";
     private static final String ACTION_BAZ = "oeildtre.esiea.fr.oeildtreapp.action.BAZ";
 
@@ -92,7 +91,7 @@ public class GraphService extends IntentService {
         Log.d("Max","Thread service name : " + Thread.currentThread().getName());
         URL url = null;
         try {
-            url = new URL ("http://"+vg.getRasp()+"/pst3oeildtre/web/app.php/"+param1+param2);
+            url = new URL ("http://77.202.45.104/pst3oeildtre/web/app.php/"+param1+param2);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
@@ -133,7 +132,7 @@ public class GraphService extends IntentService {
         Log.d("Max","Thread service name : " + Thread.currentThread().getName());
         URL url = null;
         try {
-            url = new URL ("http://"+vg.getRasp()+"/pst3oeildtre/web/app.php/"+param1+param2);
+            url = new URL ("http://77.202.45.104/pst3oeildtre/web/app.php/"+param1+param2);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();

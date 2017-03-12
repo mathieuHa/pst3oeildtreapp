@@ -26,10 +26,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 public class FragYear extends Fragment {
     public static final String UPDATES_SENSOR="UPDATES_SENSOR";
@@ -53,15 +49,8 @@ public class FragYear extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
-                Log.d("D'acc", "Callback de Mathieu");
                 list_data = getFromFile("sensors", link);
-                for (int i = 0; i < list_data.length(); i++) {
-                    try {
-                        sensorList.setAlObject(list_data.getJSONObject(i));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
+                Log.d("D'acc", list_data.toString());
             }
         }
     }
@@ -115,7 +104,8 @@ public class FragYear extends Fragment {
                             GraphService.startActionBaz(getContext(),"sensors",link);
                             IntentFilter inFi = new IntentFilter(UPDATES_DATA);
                             LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateData(),inFi);
-                            Log.e("Lol","On essaye" );
+
+                            Log.e("Lol","On essaye");
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
