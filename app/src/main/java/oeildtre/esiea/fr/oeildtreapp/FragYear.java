@@ -115,7 +115,7 @@ public class FragYear extends Fragment {
                             GraphService.startActionBaz(getContext(),"sensors",link);
                             IntentFilter inFi = new IntentFilter(UPDATES_DATA);
                             LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateData(),inFi);
-                            Log.e("Lol","On essaye");
+                            Log.e("Lol","On essaye" );
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
