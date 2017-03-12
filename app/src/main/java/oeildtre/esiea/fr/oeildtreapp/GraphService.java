@@ -26,6 +26,7 @@ import java.net.URL;
 public class GraphService extends IntentService {
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
+    private VariablesGlobales vg;
     private static final String ACTION_FOO = "oeildtre.esiea.fr.oeildtreapp.action.FOO";
     private static final String ACTION_BAZ = "oeildtre.esiea.fr.oeildtreapp.action.BAZ";
 
@@ -73,7 +74,8 @@ public class GraphService extends IntentService {
             final String action = intent.getAction();
             if (ACTION_FOO.equals(action)) {
                 final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                handleActionFoo(param1);
+                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
+                handleActionFoo(param1,param2);
             } else if (ACTION_BAZ.equals(action)) {
                 final String param1 = intent.getStringExtra(EXTRA_PARAM1);
                 final String param2 = intent.getStringExtra(EXTRA_PARAM2);
@@ -86,25 +88,25 @@ public class GraphService extends IntentService {
      * Handle action Foo in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionFoo(String param1) {
+    private void handleActionFoo(String param1, String param2) {
         Log.d("Max","Thread service name : " + Thread.currentThread().getName());
         URL url = null;
         try {
-            url = new URL ("http://90.92.227.92/pst3oeildtre/web/app.php/"+param1);
+            url = new URL ("http://"+vg.getRasp()+"/pst3oeildtre/web/app.php/"+param1+param2);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
             if (HttpURLConnection.HTTP_OK == connection.getResponseCode()){
                 copyInputStreamToFile(connection.getInputStream(),
-                        new File(getCacheDir(), "/sensors.json"));
-                Log.d("Max",param1+"/"+"DL");
+                        new File(getCacheDir(), "/"+param1+param2+".json"));
+                Log.d("Max",param1+param2+" DL");
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_SENSOR));
     }
     private void copyInputStreamToFile (InputStream in, File file){
         try {
@@ -128,8 +130,24 @@ public class GraphService extends IntentService {
      * parameters.
      */
     private void handleActionBaz(String param1, String param2) {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
+        Log.d("Max","Thread service name : " + Thread.currentThread().getName());
+        URL url = null;
+        try {
+            url = new URL ("http://"+vg.getRasp()+"/pst3oeildtre/web/app.php/"+param1+param2);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            if (HttpURLConnection.HTTP_OK == connection.getResponseCode()){
+                copyInputStreamToFile(connection.getInputStream(),
+                        new File(getCacheDir(), "/"+param1+param2+".json"));
+                Log.d("Max",param1+param2+" DL");
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_DATA));
     }
 }
 

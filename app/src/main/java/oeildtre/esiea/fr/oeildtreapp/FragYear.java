@@ -32,22 +32,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FragYear extends Fragment {
-    public static final String UPDATES="UPDATES";
-    private JSONArray arr;
-    private JSONObject obj = new JSONObject();
+    public static final String UPDATES_SENSOR="UPDATES_SENSOR";
+    public static final String UPDATES_DATA="UPDATES_DATA";
+    private JSONArray list_obj, list_data;
     private String sensor;
+    private String link;
     private Sensor sensorList;
 
 
-    public class Update extends BroadcastReceiver {
+    public class UpdateSensor extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
-                Log.d("OK", "Callback de Mathieu");
-                arr = getBiersFromFile();
-                for (int i = 0; i < arr.length(); i++) {
+                list_obj = getFromFile("sensors","");
+                Log.e("OK", list_obj.toString());
+            }
+        }
+    }
+    public class UpdateData extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent) {
+                Log.d("D'acc", "Callback de Mathieu");
+                list_data = getFromFile("sensors", link);
+                for (int i = 0; i < list_data.length(); i++) {
                     try {
-                        sensorList.setAlObject(arr.getJSONObject(i));
+                        sensorList.setAlObject(list_data.getJSONObject(i));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -55,13 +65,14 @@ public class FragYear extends Fragment {
             }
         }
     }
-    public JSONArray getBiersFromFile(){
+    public JSONArray getFromFile(String param1,String param2) {
         try {
-            InputStream is = new FileInputStream(getActivity().getCacheDir()+"/sensors.json");
+            Log.e("coco",getActivity().getCacheDir() + "/"+param1+param2+".json" );
+            InputStream is = new FileInputStream(getActivity().getCacheDir() + "/"+param1+param2+".json");
             byte[] buffer = new byte[is.available()];
             is.read(buffer);
             is.close();
-            return new JSONArray(new String(buffer,"UTF-8"));
+            return new JSONArray(new String(buffer, "UTF-8"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -78,10 +89,11 @@ public class FragYear extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        GraphService.startActionFoo(getContext(),"sensors","");
-        IntentFilter inF = new IntentFilter(UPDATES);
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new Update(),inF);
+
         View year = inflater.inflate(R.layout.graphe_year, container, false);
+        GraphService.startActionFoo(getContext(),"sensors","");
+        IntentFilter inF = new IntentFilter(UPDATES_SENSOR);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateSensor(),inF);
 
         String time ="10";
         final CheckBox temp = (CheckBox) year.findViewById(R.id.temp);
@@ -95,12 +107,15 @@ public class FragYear extends Fragment {
                 son.setChecked(false);
                 lum.setChecked(false);
                 sensor = "température";
-                for (JSONObject obj : sensorList.getAl()){
+                for (int i=0; i<list_obj.length(); i++){
                     try {
-                        if (obj.get("name") == sensor){
-                            GraphService.startActionFoo(getContext(),"sensors","/"+obj.get("id")+"/dailydata/year?year=2017");
-                            IntentFilter inF = new IntentFilter(UPDATES);
-                            LocalBroadcastManager.getInstance(getContext()).registerReceiver(new Update(),inF);
+                        if (list_obj.getJSONObject(i).getString("name").equals(sensor)){
+                            link = "/"+list_obj.getJSONObject(i).getString("id")+"/dailydata/year?year=2017";
+
+                            GraphService.startActionBaz(getContext(),"sensors",link);
+                            IntentFilter inFi = new IntentFilter(UPDATES_DATA);
+                            LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateData(),inFi);
+                            Log.e("Lol","On essaye");
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -136,7 +151,8 @@ public class FragYear extends Fragment {
                 sensor = "son";
             }
         });
-        ArrayList<CheckBox> cb = new ArrayList<CheckBox>();
+
+        /*ArrayList<CheckBox> cb = new ArrayList<CheckBox>();
         cb.add(temp);cb.add(humi);cb.add(son);cb.add(lum);
 
 
@@ -154,7 +170,7 @@ public class FragYear extends Fragment {
             URL url = new URL("http://90.92.227.92/pst3oeildtre/web/app.php/sensors/1/data/day?day=19&month=2&year=2017");
         } catch (MalformedURLException e) {
             e.printStackTrace();
-        }
+        }*/
 
 
         final ImageView img = (ImageView) year.findViewById(R.id.img_year);

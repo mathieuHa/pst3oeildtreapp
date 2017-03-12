@@ -12,9 +12,11 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.NotificationCompat;
@@ -26,11 +28,12 @@ import org.json.JSONException;
 public class Fragments extends FragmentActivity {
 
     private PagerAdapter mPagerAdapter;
-    public static final String UPDATES="UPDATES";
     public JSONArray values;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.fragmentation);
 
@@ -49,6 +52,7 @@ public class Fragments extends FragmentActivity {
         ViewPager pager = (ViewPager) super.findViewById(R.id.viewpager);
         // Affectation de l'adapter au ViewPager
         pager.setAdapter(this.mPagerAdapter);
+
     }
 }
 
