@@ -62,7 +62,7 @@ public class FragYear extends Fragment {
                     }
                 }
                 Log.v("Graph", graph);
-                final ImageView img = (ImageView) getActivity().findViewById(R.id.img_year );
+                final ImageView img = (ImageView) getActivity().findViewById(R.id.img_year);
                 Picasso.with(getActivity()).load(
                         "http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
                                 "&chd=t:"+graph+"&chl=time").into(img);
