@@ -30,6 +30,7 @@ public class FragMonth extends Fragment {
     private JSONArray list_obj, list_data;
     private String sensor;
     private String link;
+    private String web = "/dailydata/month?month=3&year=2017";
     private String graph="0";
     private boolean fini = false;
 
@@ -111,7 +112,7 @@ public class FragMonth extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
 
                                 GraphService.startActionBaz2(getContext(), "sensors", link);
                             }
@@ -135,7 +136,7 @@ public class FragMonth extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
 
                                 GraphService.startActionBaz2(getContext(), "sensors", link);
                             }
@@ -158,7 +159,7 @@ public class FragMonth extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
 
                                 GraphService.startActionBaz2(getContext(), "sensors", link);
                             }
@@ -181,7 +182,7 @@ public class FragMonth extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
 
                                 GraphService.startActionBaz2(getContext(), "sensors", link);
                             }

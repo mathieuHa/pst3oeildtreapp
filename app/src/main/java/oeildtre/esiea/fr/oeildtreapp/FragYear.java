@@ -32,6 +32,7 @@ public class FragYear extends Fragment {
     private String sensor;
     private String link;
     private String graph="0";
+    private String web = "/dailydata/year?year=2018";
     private boolean fini = false;
 
 
@@ -113,7 +114,7 @@ public class FragYear extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/dailydata/year?year=2018";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
 
                                 GraphService.startActionBaz3(getContext(), "sensors", link);
 
@@ -139,7 +140,7 @@ public class FragYear extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/dailydata/year?year=2018";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
 
                                 GraphService.startActionBaz3(getContext(), "sensors", link);
 
@@ -164,7 +165,7 @@ public class FragYear extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/dailydata/year?year=2018";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
 
                                 GraphService.startActionBaz3(getContext(), "sensors", link);
 
@@ -189,7 +190,7 @@ public class FragYear extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/dailydata/year?year=2018";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
 
                                 GraphService.startActionBaz3(getContext(), "sensors", link);
 

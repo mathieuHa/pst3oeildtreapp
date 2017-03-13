@@ -1,35 +1,18 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Vector;
-
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 import android.view.View;
-import android.widget.DatePicker;
 
-import org.json.JSONArray;
-import org.json.JSONException;
+import java.util.List;
+import java.util.Vector;
+
+
+
 
 public class Fragments extends FragmentActivity {
     private PagerAdapter mPagerAdapter;

@@ -1,15 +1,16 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
 
-import android.app.DatePickerDialog;
-import android.app.Dialog;
+
 import android.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -40,6 +40,7 @@ public class FragDay extends Fragment {
     private String sensor;
     private String link;
     private String graph="0";
+    private String web = "/data/day?day=19&month=2&year=2017";
     private boolean fini = false;
 
     private EditText mEdit;
@@ -121,7 +122,7 @@ public class FragDay extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
 
                                 GraphService.startActionBaz1(getContext(), "sensors", link);
                             }
@@ -145,7 +146,7 @@ public class FragDay extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
 
                                 GraphService.startActionBaz1(getContext(), "sensors", link);
                             }
@@ -168,7 +169,7 @@ public class FragDay extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
 
                                 GraphService.startActionBaz1(getContext(), "sensors", link);
                             }
@@ -191,7 +192,7 @@ public class FragDay extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
 
                                 GraphService.startActionBaz1(getContext(), "sensors", link);
                             }
@@ -213,27 +214,4 @@ public class FragDay extends Fragment {
         });
         return day;
     }
-    public void selectDate(View view) {
-        DialogFragment newFragment = new SelectDateFragment();
-        newFragment.show(getSupportFragmentManager(), "DatePicker");
-    }
-    public void populateSetDate(int year, int month, int day) {
-        mEdit = (EditText)day.findViewById(R.id.date);
-        mEdit.setText(month+"/"+day+"/"+year);
-    }
-    public class SelectDateFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Calendar calendar = Calendar.getInstance();
-            int yy = calendar.get(Calendar.YEAR);
-            int mm = calendar.get(Calendar.MONTH);
-            int dd = calendar.get(Calendar.DAY_OF_MONTH);
-            return new DatePickerDialog(getActivity(), this, yy, mm, dd);
-        }
-
-        public void onDateSet(DatePicker view, int yy, int mm, int dd) {
-            populateSetDate(yy, mm+1, dd);
-        }
-    }
-
 }
