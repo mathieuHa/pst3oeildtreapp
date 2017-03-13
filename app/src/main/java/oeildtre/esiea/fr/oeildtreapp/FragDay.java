@@ -39,7 +39,6 @@ public class FragDay extends Fragment {
     private JSONArray list_obj, list_data;
     private String sensor;
     private String link;
-    private String graph="0";
     private String web = "/data/day?day=19&month=2&year=2017";
     private boolean fini = false;
 
@@ -59,22 +58,24 @@ public class FragDay extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
-                graph="";
+                String graph="";
                 list_data = getFromFile("sensors", "_data1");
                 Log.d("FD.UData", list_data.toString());
                 for(int i = 0; i<list_data.length();i++){
                     try {
-                        if(i==0)graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
-                        else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        if(i==0) graph = String.valueOf(list_data.getJSONObject(i).getInt("value")*3.3+15);
+                        else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value")*3.3+15);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
-                Log.v("Graph", graph);
+                Log.i("Graph", graph);
                 final ImageView img = (ImageView) getActivity().findViewById(R.id.img_day);
                 Picasso.with(getActivity()).load(
-                        "http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
-                                "&chd=t:"+graph+"&chl=time").into(img);
+                        //"http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
+                              //  "&chd=t:"+graph+"&chl=time").into(img);
+                "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:|0h|6h|12h|18h|24h&chd=t:"+
+                        graph+"&chxr=2,-10,30&chs=400x150&chco=FF0000&chg=25,33,1,5"/*&chxs=0,0000dd,10|1,0000dd,12,0"*/).into(img);
             }
         }
     }

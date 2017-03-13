@@ -31,7 +31,6 @@ public class FragMonth extends Fragment {
     private String sensor;
     private String link;
     private String web = "/dailydata/month?month=3&year=2017";
-    private String graph="0";
     private boolean fini = false;
 
 
@@ -49,13 +48,17 @@ public class FragMonth extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
-                graph="0";
+                String graph="", graphMax="", graphMin="";
                 list_data = getFromFile("sensors", "_data2");
                 Log.d("FM.UData", list_data.toString());
                 for(int i = 0; i<list_data.length();i++){
                     try {
-                        if(i==0)graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
-                        else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        if(i==0)graph = String.valueOf(list_data.getJSONObject(i).getInt("value")*3.3+15);
+                        else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value")*3.3+15);
+                        if(i==0)graphMax = String.valueOf(list_data.getJSONObject(i).getInt("max")*3.3+15);
+                        else graphMax = graphMax+","+String.valueOf(list_data.getJSONObject(i).getInt("max")*3.3+15);
+                        if(i==0)graphMin = String.valueOf(list_data.getJSONObject(i).getInt("min")*3.3+15);
+                        else graphMin = graphMin+","+String.valueOf(list_data.getJSONObject(i).getInt("min")*3.3+15);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -63,8 +66,8 @@ public class FragMonth extends Fragment {
                 Log.v("Graph", graph);
                 final ImageView img = (ImageView) getActivity().findViewById(R.id.img_month);
                 Picasso.with(getActivity()).load(
-                        "http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
-                                "&chd=t:"+graph+"&chl=time").into(img);
+                        "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:|1j|8j|16j|24j|31j&chd=t:"+
+                                graph+"|"+graphMax+"|"+graphMin+"&chxr=2,-10,30&chs=400x150&chco=FF0000|FFFF00&chg=25,33,1,5").into(img);
             }
         }
     }

@@ -55,8 +55,8 @@ public class FragYear extends Fragment {
                 Log.d("FY.UData", list_data.toString());
                 for(int i = 0; i<list_data.length();i++){
                     try {
-                        if(i==0)graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
-                        else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        if(i==0)graph = String.valueOf(list_data.getJSONObject(i).getInt("value")*3.3+15);
+                        else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value")*3.3+15);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
