@@ -7,20 +7,17 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.EventLog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -28,8 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class FragMonth extends Fragment {
-    public static final String UPDATES_SENSOR="UPDATES_SENSOR";
-    public static final String UPDATES_DATA2="UPDATES_DATA";
+    public static final String UPDATES_SENSOR2="UPDATES_SENSOR2";
+    public static final String UPDATES_DATA2="UPDATES_DATA2";
     private JSONArray list_obj, list_data;
     private String sensor;
     private String link;
@@ -43,11 +40,6 @@ public class FragMonth extends Fragment {
             if (null != intent) {
                 list_obj = getFromFile("sensors","");
                 Log.d("FM.USensor", list_obj.toString());
-                try {
-                    Log.i("Test",list_obj.getJSONObject(0).toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
                 fini = true;
             }
         }
@@ -61,7 +53,8 @@ public class FragMonth extends Fragment {
                 Log.d("FM.UData", list_data.toString());
                 for(int i = 0; i<list_data.length();i++){
                     try {
-                        graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        if(i==0)graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -92,18 +85,15 @@ public class FragMonth extends Fragment {
         }
         return new JSONArray();
     }
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View month = inflater.inflate(R.layout.graphe_month, container, false);
 
-
-        IntentFilter inF = new IntentFilter(UPDATES_SENSOR);
+        GraphService.startActionFoo(getContext(),"sensors","");
+        IntentFilter inF = new IntentFilter(UPDATES_SENSOR2);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateSensor(),inF);
-
 
         String time ="10";
         final CheckBox temp = (CheckBox) month.findViewById(R.id.temp);

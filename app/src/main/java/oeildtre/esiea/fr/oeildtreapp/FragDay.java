@@ -1,5 +1,9 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
+
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,35 +11,35 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.EventLog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.ImageView;
-import android.widget.RadioButton;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 
 public class FragDay extends Fragment {
-    public static final String UPDATES_SENSOR="UPDATES_SENSOR";
-    public static final String UPDATES_DATA1="UPDATES_DATA";
+    public static final String UPDATES_SENSOR1="UPDATES_SENSOR1";
+    public static final String UPDATES_DATA1="UPDATES_DATA1";
     private JSONArray list_obj, list_data;
     private String sensor;
     private String link;
     private String graph="0";
     private boolean fini = false;
-
 
     public class UpdateSensor extends BroadcastReceiver {
         @Override
@@ -43,11 +47,6 @@ public class FragDay extends Fragment {
             if (null != intent) {
                 list_obj = getFromFile("sensors","");
                 Log.d("FD.USensor", list_obj.toString());
-                try {
-                    Log.i("Test",list_obj.getJSONObject(0).toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
                 fini = true;
             }
         }
@@ -56,12 +55,13 @@ public class FragDay extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
-                graph="0";
+                graph="";
                 list_data = getFromFile("sensors", "_data1");
                 Log.d("FD.UData", list_data.toString());
                 for(int i = 0; i<list_data.length();i++){
                     try {
-                        graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        if(i==0)graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -92,20 +92,17 @@ public class FragDay extends Fragment {
         }
         return new JSONArray();
     }
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View day = inflater.inflate(R.layout.graphe_day, container, false);
+        final View day = inflater.inflate(R.layout.graphe_day, container, false);
 
-
-        IntentFilter inF = new IntentFilter(UPDATES_SENSOR);
+        GraphService.startActionFoo(getContext(),"sensors","");
+        IntentFilter inF = new IntentFilter(UPDATES_SENSOR1);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateSensor(),inF);
 
-
-        String time ="10";
+        final Button btn = (Button) day.findViewById(R.id.bdate);
         final CheckBox temp = (CheckBox) day.findViewById(R.id.temp);
         final CheckBox humi = (CheckBox) day.findViewById(R.id.humi);
         final CheckBox son  = (CheckBox) day.findViewById(R.id.son);
@@ -204,6 +201,14 @@ public class FragDay extends Fragment {
         });
         IntentFilter inFi = new IntentFilter(UPDATES_DATA1);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateData(), inFi);
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         return day;
     }
+
 }

@@ -7,20 +7,17 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.EventLog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -28,9 +25,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class FragYear extends Fragment {
-    public static final String UPDATES_SENSOR="UPDATES_SENSOR";
-    public static final String UPDATES_DATA3="UPDATES_DATA";
-    private JSONArray list_obj, list_data;
+    public static final String UPDATES_SENSOR3="UPDATES_SENSOR3";
+    public static final String UPDATES_DATA3="UPDATES_DATA3";
+    private JSONArray list_obj;
+    private JSONArray list_data;
     private String sensor;
     private String link;
     private String graph="0";
@@ -43,11 +41,6 @@ public class FragYear extends Fragment {
             if (null != intent) {
                 list_obj = getFromFile("sensors","");
                 Log.d("FY.USensor", list_obj.toString());
-                try {
-                    Log.i("Test",list_obj.getJSONObject(0).toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
                 fini = true;
             }
         }
@@ -58,10 +51,11 @@ public class FragYear extends Fragment {
             if (null != intent) {
                 graph="0";
                 list_data = getFromFile("sensors", "_data3");
-                Log.d("FD.UData", list_data.toString());
+                Log.d("FY.UData", list_data.toString());
                 for(int i = 0; i<list_data.length();i++){
                     try {
-                        graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        if(i==0)graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -93,17 +87,15 @@ public class FragYear extends Fragment {
         return new JSONArray();
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View year = inflater.inflate(R.layout.graphe_year, container, false);
 
-
-        IntentFilter inF = new IntentFilter(UPDATES_SENSOR);
+        GraphService.startActionFoo(getContext(),"sensors","");
+        IntentFilter inF = new IntentFilter(UPDATES_SENSOR3);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateSensor(),inF);
-
 
         String time ="10";
         final CheckBox temp = (CheckBox) year.findViewById(R.id.temp);
@@ -121,7 +113,7 @@ public class FragYear extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/dailydata/year?year=2018";
 
                                 GraphService.startActionBaz3(getContext(), "sensors", link);
 
@@ -147,7 +139,7 @@ public class FragYear extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/dailydata/year?year=2018";
 
                                 GraphService.startActionBaz3(getContext(), "sensors", link);
 
@@ -172,7 +164,7 @@ public class FragYear extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/dailydata/year?year=2018";
 
                                 GraphService.startActionBaz3(getContext(), "sensors", link);
 
@@ -197,7 +189,7 @@ public class FragYear extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/data/day?day=19&month=2&year=2017";
+                                link = "/" + list_obj.getJSONObject(i).getString("id") + "/dailydata/year?year=2018";
 
                                 GraphService.startActionBaz3(getContext(), "sensors", link);
 

@@ -129,7 +129,10 @@ public class GraphService extends IntentService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Fragments.UPDATES_SENSOR));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_SENSOR1));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragMonth.UPDATES_SENSOR2));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_SENSOR3));
+
 
     }
     private void copyInputStreamToFile (InputStream in, File file){
