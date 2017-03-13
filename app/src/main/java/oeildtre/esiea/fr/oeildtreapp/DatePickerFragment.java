@@ -15,7 +15,9 @@ import java.util.Calendar;
 
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener{
     private EditText mEdit;
-
+    private int year;
+    private int month;
+    private int day;
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Calendar calendar = Calendar.getInstance();
@@ -26,10 +28,20 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     }
 
     public void onDateSet(DatePicker view, int yy, int mm, int dd) {
-        populateSetDate(yy, mm+1, dd);
+        year = yy;
+        month = mm;
+        day = dd;
     }
-    public void populateSetDate(int year, int month, int day) {
-        mEdit = (EditText)findViewById(R.id.date);
-        mEdit.setText(month+"/"+day+"/"+year);
+
+    public int getYear() {
+        return year;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public int getDay() {
+        return day;
     }
 }

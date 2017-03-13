@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -40,6 +41,8 @@ public class FragDay extends Fragment {
     private String link;
     private String graph="0";
     private boolean fini = false;
+
+    private EditText mEdit;
 
     public class UpdateSensor extends BroadcastReceiver {
         @Override
@@ -209,6 +212,28 @@ public class FragDay extends Fragment {
             }
         });
         return day;
+    }
+    public void selectDate(View view) {
+        DialogFragment newFragment = new SelectDateFragment();
+        newFragment.show(getSupportFragmentManager(), "DatePicker");
+    }
+    public void populateSetDate(int year, int month, int day) {
+        mEdit = (EditText)day.findViewById(R.id.date);
+        mEdit.setText(month+"/"+day+"/"+year);
+    }
+    public class SelectDateFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Calendar calendar = Calendar.getInstance();
+            int yy = calendar.get(Calendar.YEAR);
+            int mm = calendar.get(Calendar.MONTH);
+            int dd = calendar.get(Calendar.DAY_OF_MONTH);
+            return new DatePickerDialog(getActivity(), this, yy, mm, dd);
+        }
+
+        public void onDateSet(DatePicker view, int yy, int mm, int dd) {
+            populateSetDate(yy, mm+1, dd);
+        }
     }
 
 }
