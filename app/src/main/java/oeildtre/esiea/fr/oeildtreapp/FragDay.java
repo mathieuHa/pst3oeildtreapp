@@ -2,6 +2,7 @@ package oeildtre.esiea.fr.oeildtreapp;
 
 
 
+import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,8 +19,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
@@ -32,6 +35,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
+
+import static oeildtre.esiea.fr.oeildtreapp.R.id.bdate;
 
 public class FragDay extends Fragment {
     public static final String UPDATES_SENSOR1="UPDATES_SENSOR1";
@@ -61,10 +66,13 @@ public class FragDay extends Fragment {
                 String graph="";
                 list_data = getFromFile("sensors", "_data1");
                 Log.d("FD.UData", list_data.toString());
-                for(int i = 0; i<list_data.length();i++){
+                for(int i = 0; i<24*2;i++){
                     try {
-                        if(i==0) graph = String.valueOf(list_data.getJSONObject(i).getInt("value")*3.3+15);
-                        else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value")*3.3+15);
+                        if (i>list_data.length()) graph += ",0";
+                        else {
+                            if(i==0) graph = String.valueOf(list_data.getJSONObject(i).getInt("value")*3.3+15);
+                            else graph += ","+String.valueOf(list_data.getJSONObject(i).getInt("value")*3.3+15);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -107,7 +115,8 @@ public class FragDay extends Fragment {
         IntentFilter inF = new IntentFilter(UPDATES_SENSOR1);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateSensor(),inF);
 
-        final Button btn = (Button) day.findViewById(R.id.bdate);
+        final Button btn = (Button) day.findViewById(bdate);
+        final TextView text = (TextView) day.findViewById(R.id.date);
         final CheckBox temp = (CheckBox) day.findViewById(R.id.temp);
         final CheckBox humi = (CheckBox) day.findViewById(R.id.humi);
         final CheckBox son  = (CheckBox) day.findViewById(R.id.son);
@@ -210,9 +219,26 @@ public class FragDay extends Fragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final Calendar c = Calendar.getInstance();
+                int mYear = c.get(Calendar.YEAR);
+                int mMonth = c.get(Calendar.MONTH);
+                int mDay = c.get(Calendar.DAY_OF_MONTH);
 
+                DatePickerDialog dpd = new DatePickerDialog(getContext(),
+                        new DatePickerDialog.OnDateSetListener() {
+
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                text.setText(dayOfMonth + "/"
+                                        + (monthOfYear + 1) + "/" + year);
+                                web = "/data/day?day="+dayOfMonth+"&month="+(monthOfYear+1)+"&year="+year;
+                            }
+                        }, mYear, mMonth, mDay);
+                dpd.show();
             }
         });
         return day;
     }
+
 }
