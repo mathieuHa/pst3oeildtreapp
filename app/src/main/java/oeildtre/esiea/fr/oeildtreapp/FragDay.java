@@ -70,8 +70,8 @@ public class FragDay extends Fragment {
                     try {
                         if (i>list_data.length()) graph += ",0";
                         else {
-                            if(i==0) graph = String.valueOf(list_data.getJSONObject(i).getInt("value")*3.3+15);
-                            else graph += ","+String.valueOf(list_data.getJSONObject(i).getInt("value")*3.3+15);
+                            if(i==0) graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                            else graph += ","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -83,7 +83,7 @@ public class FragDay extends Fragment {
                         //"http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
                               //  "&chd=t:"+graph+"&chl=time").into(img);
                 "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:|0h|6h|12h|18h|24h&chd=t:"+
-                        graph+"&chxr=2,-10,30&chs=400x150&chco=FF0000&chg=25,33,1,5"/*&chxs=0,0000dd,10|1,0000dd,12,0"*/).into(img);
+                        graph+"&chs=400x150&chco=FF0000&chg=25,33,1,5"/*&chxs=0,0000dd,10|1,0000dd,12,0"*/).into(img);
             }
         }
     }
