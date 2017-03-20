@@ -220,9 +220,8 @@ public class FragMonth extends Fragment {
                             @Override
                             public void onDateSet(DatePicker view, int year,
                                                   int monthOfYear, int dayOfMonth) {
-                                text.setText(dayOfMonth + "/"
-                                        + (monthOfYear + 1) + "/" + year);
-                                web = "/data/day?day="+dayOfMonth+"&month="+(monthOfYear+1)+"&year="+year;
+                                text.setText((monthOfYear + 1) + "/" + year);
+                                web = "/dailydata/month?month="+monthOfYear+"&year="+year;
                                 GraphService.startActionBaz2(getContext(), "sensors", link2+web);
                             }
                         }, mYear, mMonth, mDay);

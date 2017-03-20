@@ -1,5 +1,6 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
+import android.app.DatePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,8 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -23,6 +27,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
+
+import static oeildtre.esiea.fr.oeildtreapp.R.id.bdate;
 
 public class FragYear extends Fragment {
     public static final String UPDATES_SENSOR3="UPDATES_SENSOR3";
@@ -30,8 +37,7 @@ public class FragYear extends Fragment {
     private JSONArray list_obj;
     private JSONArray list_data;
     private String sensor;
-    private String link;
-    private String graph="0";
+    private String link, link2;
     private String web = "/dailydata/year?year=2018";
     private boolean fini = false;
 
@@ -50,7 +56,7 @@ public class FragYear extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
-                graph="0";
+                String graph="";
                 list_data = getFromFile("sensors", "_data3");
                 Log.d("FY.UData", list_data.toString());
                 for(int i = 0; i<list_data.length();i++){
@@ -98,7 +104,8 @@ public class FragYear extends Fragment {
         IntentFilter inF = new IntentFilter(UPDATES_SENSOR3);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateSensor(),inF);
 
-        String time ="10";
+        final Button btn = (Button) year.findViewById(bdate);
+        final TextView text = (TextView) year.findViewById(R.id.date);
         final CheckBox temp = (CheckBox) year.findViewById(R.id.temp);
         final CheckBox humi = (CheckBox) year.findViewById(R.id.humi);
         final CheckBox son  = (CheckBox) year.findViewById(R.id.son);
@@ -115,10 +122,8 @@ public class FragYear extends Fragment {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
                                 link = "/" + list_obj.getJSONObject(i).getString("id") + web;
-
+                                link2 = "/" + list_obj.getJSONObject(i).getString("id");
                                 GraphService.startActionBaz3(getContext(), "sensors", link);
-
-                                Log.e("FD.Temp", "On essaye");
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -141,10 +146,8 @@ public class FragYear extends Fragment {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
                                 link = "/" + list_obj.getJSONObject(i).getString("id") + web;
-
+                                link2 = "/" + list_obj.getJSONObject(i).getString("id");
                                 GraphService.startActionBaz3(getContext(), "sensors", link);
-
-                                Log.e("Lol", "On essaye");
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -166,10 +169,8 @@ public class FragYear extends Fragment {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
                                 link = "/" + list_obj.getJSONObject(i).getString("id") + web;
-
+                                link2 = "/" + list_obj.getJSONObject(i).getString("id");
                                 GraphService.startActionBaz3(getContext(), "sensors", link);
-
-                                Log.e("Lol", "On essaye");
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -191,10 +192,8 @@ public class FragYear extends Fragment {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
                                 link = "/" + list_obj.getJSONObject(i).getString("id") + web;
-
+                                link2 = "/" + list_obj.getJSONObject(i).getString("id");
                                 GraphService.startActionBaz3(getContext(), "sensors", link);
-
-                                Log.e("Lol", "On essaye");
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -205,6 +204,28 @@ public class FragYear extends Fragment {
         });
         IntentFilter inFi = new IntentFilter(UPDATES_DATA3);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateData(), inFi);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar c = Calendar.getInstance();
+                int mYear = c.get(Calendar.YEAR);
+                int mMonth = c.get(Calendar.MONTH);
+                int mDay = c.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog dpd = new DatePickerDialog(getContext(),
+                        new DatePickerDialog.OnDateSetListener() {
+
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                text.setText(year);
+                                web = "/dailydata/year?year="+year;
+                                GraphService.startActionBaz2(getContext(), "sensors", link2+web);
+                            }
+                        }, mYear, mMonth, mDay);
+                dpd.show();
+            }
+        });
         return year;
     }
 }
