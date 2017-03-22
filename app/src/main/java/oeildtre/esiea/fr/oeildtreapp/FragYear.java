@@ -68,7 +68,7 @@ public class FragYear extends Fragment {
                     }
                 }
                 Log.v("Graph", graph);
-                final ImageView img = (ImageView) getActivity().findViewById(R.id.img_year);
+                final ImageView img = (ImageView) getActivity().findViewById(R.id.img);
                 Picasso.with(getActivity()).load(
                         "http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
                                 "&chd=t:"+graph+"&chl=time").into(img);
@@ -220,7 +220,7 @@ public class FragYear extends Fragment {
                                                   int monthOfYear, int dayOfMonth) {
                                 text.setText(year);
                                 web = "/dailydata/year?year="+year;
-                                GraphService.startActionBaz2(getContext(), "sensors", link2+web);
+                                GraphService.startActionBaz3(getContext(), "sensors", link2+web);
                             }
                         }, mYear, mMonth, mDay);
                 dpd.show();

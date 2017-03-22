@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 
-import static oeildtre.esiea.fr.oeildtreapp.R.id.bdate;
 
 public class FragDay extends Fragment {
     public static final String UPDATES_SENSOR1="UPDATES_SENSOR1";
@@ -78,7 +77,7 @@ public class FragDay extends Fragment {
                     }
                 }
                 Log.i("Graph", graph);
-                final ImageView img = (ImageView) getActivity().findViewById(R.id.img_day);
+                final ImageView img = (ImageView) getActivity().findViewById(R.id.img);
                 Picasso.with(getActivity()).load(
                         //"http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
                               //  "&chd=t:"+graph+"&chl=time").into(img);
@@ -115,7 +114,7 @@ public class FragDay extends Fragment {
         IntentFilter inF = new IntentFilter(UPDATES_SENSOR1);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateSensor(),inF);
 
-        final Button btn = (Button) day.findViewById(bdate);
+        final Button btn = (Button) day.findViewById(R.id.bdate);
         final TextView text = (TextView) day.findViewById(R.id.date);
         final CheckBox temp = (CheckBox) day.findViewById(R.id.temp);
         final CheckBox humi = (CheckBox) day.findViewById(R.id.humi);

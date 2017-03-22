@@ -71,7 +71,7 @@ public class FragMonth extends Fragment {
                     }
                 }
                 Log.v("Graph", graph);
-                final ImageView img = (ImageView) getActivity().findViewById(R.id.img_month);
+                final ImageView img = (ImageView) getActivity().findViewById(R.id.img);
                 Picasso.with(getActivity()).load(
                         "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:|1j|8j|16j|24j|31j&chd=t:"+
                                 graph+"|"+graphMax+"|"+graphMin+"&chs=400x150&chco=FF0000,FFFF00,00FFFF&chg=25,33,1,5").into(img);
