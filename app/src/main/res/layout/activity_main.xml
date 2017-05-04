@@ -1,61 +1,43 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="oeildtre.esiea.fr.oeildtreapp.MainActivity">
+    android:layout_height="match_parent" >
+
 
     <LinearLayout
-        android:layout_width="344dp"
-        android:layout_height="495dp"
-        android:orientation="vertical"
-        android:padding="20dp"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/id"
+        <LinearLayout
+            android:id="@+id/container_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:layout_marginTop="80dp"
-            android:layout_weight="1"
-            android:ems="10"
-            android:hint="Identifiant"
-            android:inputType="textPersonName" />
+            android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/mdp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_weight="1"
-            android:ems="10"
-            android:hint="Mot de passe"
-            android:inputType="textPassword" />
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/toolbar" />
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/con"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="50dp"
-            android:layout_weight="1"
-            android:text="Connexion" />
 
-        <Button
-            android:id="@+id/ins"
+        <FrameLayout
+            android:id="@+id/content_frame"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight="1"
-            android:text="Inscription"
-            tools:layout_editor_absoluteX="8dp"
-            tools:layout_editor_absoluteY="459dp" />
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+    <ListView
+        android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#FFFFFF"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp"/>
+
+
+</android.support.v4.widget.DrawerLayout>

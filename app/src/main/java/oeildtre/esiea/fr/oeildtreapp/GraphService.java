@@ -35,9 +35,8 @@ public class GraphService extends IntentService {
     private static final String EXTRA_PARAM1 = "oeildtre.esiea.fr.oeildtreapp.extra.PARAM1";
     private static final String EXTRA_PARAM2 = "oeildtre.esiea.fr.oeildtreapp.extra.PARAM2";
 
-    public GraphService() {
-        super("GraphService");
-    }
+
+    public GraphService() {super("GraphService");}
 
     /**
      * Starts this service to perform action Foo with the given parameters. If
@@ -121,20 +120,22 @@ public class GraphService extends IntentService {
             connection.connect();
             if (HttpURLConnection.HTTP_OK == connection.getResponseCode()){
                 copyInputStreamToFile(connection.getInputStream(),
-                        new File(getCacheDir(), "/"+param1+".json"));
-                Log.d("Max",param1+param2+" DL");
+                        new File(getCacheDir()+"/"+param1+".json"));
+                Log.d("Sensors",param1+".json DL");
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_SENSOR1));
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragMonth.UPDATES_SENSOR2));
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_SENSOR3));
-
-
+        switch(param2) {
+            case "day": LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_SENSORS1));break;
+            case "month" : LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragMonth.UPDATES_SENSOR2));break;
+            case "year" : LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_SENSOR3));break;
+            default : Log.e("Raté",param2);break;
+        }
     }
+
     private void copyInputStreamToFile (InputStream in, File file){
         try {
             OutputStream ou =  new FileOutputStream(file);

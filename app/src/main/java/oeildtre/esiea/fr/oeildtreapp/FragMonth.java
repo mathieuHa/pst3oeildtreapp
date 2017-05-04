@@ -40,44 +40,6 @@ public class FragMonth extends Fragment {
     private String web = "/dailydata/month?month=3&year=2017";
     private boolean fini = false;
 
-
-    public class UpdateSensor extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (null != intent) {
-                list_obj = getFromFile("sensors","");
-                Log.d("FM.USensor", list_obj.toString());
-                fini = true;
-            }
-        }
-    }
-    public class UpdateData extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (null != intent) {
-                String graph="", graphMax="", graphMin="";
-                list_data = getFromFile("sensors", "_data2");
-                Log.d("FM.UData", list_data.toString());
-                for(int i = 0; i<list_data.length();i++){
-                    try {
-                        if(i==0)graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
-                        else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
-                        if(i==0)graphMax = String.valueOf(list_data.getJSONObject(i).getInt("max"));
-                        else graphMax = graphMax+","+String.valueOf(list_data.getJSONObject(i).getInt("max"));
-                        if(i==0)graphMin = String.valueOf(list_data.getJSONObject(i).getInt("min"));
-                        else graphMin = graphMin+","+String.valueOf(list_data.getJSONObject(i).getInt("min"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Log.v("Graph", graph);
-                final ImageView img = (ImageView) getActivity().findViewById(R.id.img);
-                Picasso.with(getActivity()).load(
-                        "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:|1j|8j|16j|24j|31j&chd=t:"+
-                                graph+"|"+graphMax+"|"+graphMin+"&chs=400x150&chco=FF0000,FFFF00,00FFFF&chg=25,33,1,5").into(img);
-            }
-        }
-    }
     public JSONArray getFromFile(String param1,String param2) {
         try {
             InputStream is = new FileInputStream(getActivity().getCacheDir() + "/"+param1+param2+".json");
@@ -96,15 +58,18 @@ public class FragMonth extends Fragment {
         }
         return new JSONArray();
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View month = inflater.inflate(R.layout.graphe_month, container, false);
 
-        GraphService.startActionFoo(getContext(), "sensors", "");
+        GraphService.startActionFoo(getContext(), "sensors", "month");
         IntentFilter inF = new IntentFilter(UPDATES_SENSOR2);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateSensor(), inF);
+
+
 
         final Button btn = (Button) month.findViewById(bdate);
         final TextView text = (TextView) month.findViewById(R.id.date);
@@ -229,5 +194,44 @@ public class FragMonth extends Fragment {
             }
         });
         return month;
+    }
+
+    public class UpdateSensor extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent) {
+                list_obj = getFromFile("sensors","");
+                Log.d("FM.USensor", list_obj.toString());
+                fini = true;
+            }
+        }
+    }
+
+    public class UpdateData extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent) {
+                String graph="", graphMax="", graphMin="";
+                list_data = getFromFile("sensors", "_data2");
+                Log.d("FM.UData", list_data.toString());
+                for(int i = 0; i<list_data.length();i++){
+                    try {
+                        if(i==0)graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        if(i==0)graphMax = String.valueOf(list_data.getJSONObject(i).getInt("max"));
+                        else graphMax = graphMax+","+String.valueOf(list_data.getJSONObject(i).getInt("max"));
+                        if(i==0)graphMin = String.valueOf(list_data.getJSONObject(i).getInt("min"));
+                        else graphMin = graphMin+","+String.valueOf(list_data.getJSONObject(i).getInt("min"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Log.v("Graph", graph);
+                final ImageView img = (ImageView) getActivity().findViewById(R.id.img);
+                Picasso.with(getActivity()).load(
+                        "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:|1j|8j|16j|24j|31j&chd=t:"+
+                                graph+"|"+graphMax+"|"+graphMin+"&chs=400x150&chco=FF0000,FFFF00,00FFFF&chg=25,33,1,5").into(img);
+            }
+        }
     }
 }

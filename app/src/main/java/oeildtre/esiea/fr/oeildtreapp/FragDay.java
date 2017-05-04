@@ -2,6 +2,7 @@ package oeildtre.esiea.fr.oeildtreapp;
 
 
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -38,7 +39,7 @@ import java.util.Calendar;
 
 
 public class FragDay extends Fragment {
-    public static final String UPDATES_SENSOR1="UPDATES_SENSOR1";
+    public static final String UPDATES_SENSORS1="UPDATES_SENSORS1";
     public static final String UPDATES_DATA1="UPDATES_DATA1";
     private JSONArray list_obj, list_data;
     private String sensor;
@@ -48,51 +49,15 @@ public class FragDay extends Fragment {
 
     private EditText mEdit;
 
-    public class UpdateSensor extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (null != intent) {
-                list_obj = getFromFile("sensors","");
-                Log.d("FD.USensor", list_obj.toString());
-                fini = true;
-            }
-        }
-    }
-    public class UpdateData extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (null != intent) {
-                String graph="";
-                list_data = getFromFile("sensors", "_data1");
-                Log.d("FD.UData", list_data.toString());
-                for(int i = 0; i<24*2;i++){
-                    try {
-                        if (i>list_data.length()) graph += ",0";
-                        else {
-                            if(i==0) graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
-                            else graph += ","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Log.i("Graph", graph);
-                final ImageView img = (ImageView) getActivity().findViewById(R.id.img);
-                Picasso.with(getActivity()).load(
-                        //"http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
-                              //  "&chd=t:"+graph+"&chl=time").into(img);
-                "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:|0h|6h|12h|18h|24h&chd=t:"+
-                        graph+"&chs=400x150&chco=FF0000&chg=25,33,1,5"/*&chxs=0,0000dd,10|1,0000dd,12,0"*/).into(img);
-            }
-        }
-    }
     public JSONArray getFromFile(String param1,String param2) {
         try {
-            InputStream is = new FileInputStream(getActivity().getCacheDir() + "/"+param1+param2+".json");
+            InputStream is = new FileInputStream(/*getContext().getCacheDir()+"/" + */param1 + param2 + ".json");
+            Log.d("FD.USensor", getActivity().getCacheDir() + "/" + param1 + param2 + ".json");
             byte[] buffer = new byte[is.available()];
             is.read(buffer);
             is.close();
             return new JSONArray(new String(buffer, "UTF-8"));
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -104,15 +69,17 @@ public class FragDay extends Fragment {
         }
         return new JSONArray();
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         final View day = inflater.inflate(R.layout.graphe_day, container, false);
-
-        GraphService.startActionFoo(getContext(),"sensors","");
-        IntentFilter inF = new IntentFilter(UPDATES_SENSOR1);
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateSensor(),inF);
+        if (getActivity() != null) {
+            GraphService.startActionFoo(getContext(), "sensors", "day");
+            IntentFilter inF = new IntentFilter(UPDATES_SENSORS1);
+            LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateSensor(), inF);
+        }
 
         final Button btn = (Button) day.findViewById(R.id.bdate);
         final TextView text = (TextView) day.findViewById(R.id.date);
@@ -240,6 +207,46 @@ public class FragDay extends Fragment {
         });
 
         return day;
+    }
+
+    public class UpdateSensor extends BroadcastReceiver {
+        //@Override
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent) {
+                list_obj = getFromFile("sensors","");
+                Log.d("FD.Sensor", list_obj.toString());
+                fini = true;
+            }
+        }
+    }
+
+    public class UpdateData extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent) {
+                String graph="";
+                list_data = getFromFile("sensors", "_data1");
+                Log.d("FD.Data", list_data.toString());
+                for(int i = 0; i<24*2;i++){
+                    try {
+                        if (i>list_data.length()) graph += ",0";
+                        else {
+                            if(i==0) graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                            else graph += ","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Log.i("Graph", graph);
+                final ImageView img = (ImageView) getActivity().findViewById(R.id.img);
+                Picasso.with(getActivity()).load(
+                        //"http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
+                              //  "&chd=t:"+graph+"&chl=time").into(img);
+                "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:|0h|6h|12h|18h|24h&chd=t:"+
+                        graph+"&chs=400x150&chco=FF0000&chg=25,33,1,5"/*&chxs=0,0000dd,10|1,0000dd,12,0"*/).into(img);
+            }
+        }
     }
 
 }

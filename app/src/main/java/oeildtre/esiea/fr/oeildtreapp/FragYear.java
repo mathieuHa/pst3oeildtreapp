@@ -41,40 +41,6 @@ public class FragYear extends Fragment {
     private String web = "/dailydata/year?year=2018";
     private boolean fini = false;
 
-
-    public class UpdateSensor extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (null != intent) {
-                list_obj = getFromFile("sensors","");
-                Log.d("FY.USensor", list_obj.toString());
-                fini = true;
-            }
-        }
-    }
-    public class UpdateData extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (null != intent) {
-                String graph="";
-                list_data = getFromFile("sensors", "_data3");
-                Log.d("FY.UData", list_data.toString());
-                for(int i = 0; i<list_data.length();i++){
-                    try {
-                        if(i==0)graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
-                        else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Log.v("Graph", graph);
-                final ImageView img = (ImageView) getActivity().findViewById(R.id.img);
-                Picasso.with(getActivity()).load(
-                        "http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
-                                "&chd=t:"+graph+"&chl=time").into(img);
-            }
-        }
-    }
     public JSONArray getFromFile(String param1,String param2) {
         try {
             InputStream is = new FileInputStream(getActivity().getCacheDir() + "/"+param1+param2+".json");
@@ -100,7 +66,7 @@ public class FragYear extends Fragment {
 
         View year = inflater.inflate(R.layout.graphe_year, container, false);
 
-        GraphService.startActionFoo(getContext(),"sensors","");
+        GraphService.startActionFoo(getContext(),"sensors","year");
         IntentFilter inF = new IntentFilter(UPDATES_SENSOR3);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateSensor(),inF);
 
@@ -227,5 +193,40 @@ public class FragYear extends Fragment {
             }
         });
         return year;
+    }
+
+    public class UpdateSensor extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent) {
+                list_obj = getFromFile("sensors","");
+                Log.d("FY.USensor", list_obj.toString());
+                fini = true;
+            }
+        }
+    }
+
+    public class UpdateData extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent) {
+                String graph="";
+                list_data = getFromFile("sensors", "_data3");
+                Log.d("FY.UData", list_data.toString());
+                for(int i = 0; i<list_data.length();i++){
+                    try {
+                        if(i==0)graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Log.v("Graph", graph);
+                final ImageView img = (ImageView) getActivity().findViewById(R.id.img);
+                Picasso.with(getActivity()).load(
+                        "http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
+                                "&chd=t:"+graph+"&chl=time").into(img);
+            }
+        }
     }
 }

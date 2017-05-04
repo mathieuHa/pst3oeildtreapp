@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Fragments"
+            android:name=".Camera"
             android:screenOrientation="portrait"/>
 
         <service
