@@ -6,5 +6,6 @@
         <item>Month</item>
         <item>Year</item>
         <item>Camera</item>
+        <item>Medias</item>
     </string-array>
 </resources>

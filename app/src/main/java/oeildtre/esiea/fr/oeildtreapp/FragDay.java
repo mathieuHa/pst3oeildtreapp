@@ -46,12 +46,12 @@ public class FragDay extends Fragment {
     private String link, link2;
     private String web = "/data/day?day=19&month=2&year=2017";
     private boolean fini = false;
-
-    private EditText mEdit;
+    private UpdateSensor us;
+    private UpdateData ud;
 
     public JSONArray getFromFile(String param1,String param2) {
         try {
-            InputStream is = new FileInputStream(/*getContext().getCacheDir()+"/" + */param1 + param2 + ".json");
+            InputStream is = new FileInputStream(getContext().getCacheDir()+"/" + param1 + param2 + ".json");
             Log.d("FD.USensor", getActivity().getCacheDir() + "/" + param1 + param2 + ".json");
             byte[] buffer = new byte[is.available()];
             is.read(buffer);
@@ -78,7 +78,8 @@ public class FragDay extends Fragment {
         if (getActivity() != null) {
             GraphService.startActionFoo(getContext(), "sensors", "day");
             IntentFilter inF = new IntentFilter(UPDATES_SENSORS1);
-            LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateSensor(), inF);
+            us = new UpdateSensor();
+            LocalBroadcastManager.getInstance(getContext()).registerReceiver(us, inF);
         }
 
         final Button btn = (Button) day.findViewById(R.id.bdate);
@@ -180,7 +181,8 @@ public class FragDay extends Fragment {
             }
         });
         IntentFilter inFi = new IntentFilter(UPDATES_DATA1);
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateData(), inFi);
+        ud = new UpdateData();
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(ud, inFi);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -208,7 +210,13 @@ public class FragDay extends Fragment {
 
         return day;
     }
-
+    @Override
+    public void onDestroy() {
+        // Unregister since the activity is about to be closed.
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(us);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(ud);
+        super.onDestroy();
+    }
     public class UpdateSensor extends BroadcastReceiver {
         //@Override
         public void onReceive(Context context, Intent intent) {
@@ -244,7 +252,7 @@ public class FragDay extends Fragment {
                         //"http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
                               //  "&chd=t:"+graph+"&chl=time").into(img);
                 "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:|0h|6h|12h|18h|24h&chd=t:"+
-                        graph+"&chs=400x150&chco=FF0000&chg=25,33,1,5"/*&chxs=0,0000dd,10|1,0000dd,12,0"*/).into(img);
+                        graph+"&chs=400x250&chco=FF0000&chg=25,33,1,5"/*&chxs=0,0000dd,10|1,0000dd,12,0"*/).into(img);
             }
         }
     }

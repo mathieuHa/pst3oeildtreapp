@@ -35,6 +35,8 @@ public class GraphService extends IntentService {
     private static final String EXTRA_PARAM1 = "oeildtre.esiea.fr.oeildtreapp.extra.PARAM1";
     private static final String EXTRA_PARAM2 = "oeildtre.esiea.fr.oeildtreapp.extra.PARAM2";
 
+    private static final String source = "mathieuhanotaux.ddns.net";
+
 
     public GraphService() {super("GraphService");}
 
@@ -114,7 +116,7 @@ public class GraphService extends IntentService {
         Log.d("Max","Thread service name : " + Thread.currentThread().getName());
         URL url = null;
         try {
-            url = new URL ("http://90.92.227.92/pst3oeildtre/web/app.php/"+param1);
+            url = new URL ("http://"+source+"/pst3oeildtre/web/app.php/"+param1);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
@@ -161,7 +163,7 @@ public class GraphService extends IntentService {
         Log.d("Max","Thread service name : " + Thread.currentThread().getName());
         URL url = null;
         try {
-            url = new URL ("http://90.92.227.92/pst3oeildtre/web/app.php/"+param1+param2);
+            url = new URL ("http://"+source+"/pst3oeildtre/web/app.php/"+param1+param2);
             Log.e("coq",url.toString());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -182,7 +184,7 @@ public class GraphService extends IntentService {
         Log.d("Max","Thread service name : " + Thread.currentThread().getName());
         URL url = null;
         try {
-            url = new URL ("http://90.92.227.92/pst3oeildtre/web/app.php/"+param1+param2);
+            url = new URL ("http://"+source+"/pst3oeildtre/web/app.php/"+param1+param2);
             Log.e("coq",url.toString());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -203,7 +205,7 @@ public class GraphService extends IntentService {
         Log.d("Max","Thread service name : " + Thread.currentThread().getName());
         URL url = null;
         try {
-            url = new URL ("http://90.92.227.92/pst3oeildtre/web/app.php/"+param1+param2);
+            url = new URL ("http://"+source+"/pst3oeildtre/web/app.php/"+param1+param2);
             Log.e("coq",url.toString());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");

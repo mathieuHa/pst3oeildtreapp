@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 
-import static oeildtre.esiea.fr.oeildtreapp.R.id.bdate;
 
 public class FragYear extends Fragment {
     public static final String UPDATES_SENSOR3="UPDATES_SENSOR3";
@@ -40,6 +39,9 @@ public class FragYear extends Fragment {
     private String link, link2;
     private String web = "/dailydata/year?year=2018";
     private boolean fini = false;
+
+    private UpdateSensor us;
+    private UpdateData ud;
 
     public JSONArray getFromFile(String param1,String param2) {
         try {
@@ -68,9 +70,10 @@ public class FragYear extends Fragment {
 
         GraphService.startActionFoo(getContext(),"sensors","year");
         IntentFilter inF = new IntentFilter(UPDATES_SENSOR3);
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateSensor(),inF);
+        us = new UpdateSensor();
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(us,inF);
 
-        final Button btn = (Button) year.findViewById(bdate);
+        final Button btn = (Button) year.findViewById(R.id.bdate);
         final TextView text = (TextView) year.findViewById(R.id.date);
         final CheckBox temp = (CheckBox) year.findViewById(R.id.temp);
         final CheckBox humi = (CheckBox) year.findViewById(R.id.humi);
@@ -169,6 +172,7 @@ public class FragYear extends Fragment {
             }
         });
         IntentFilter inFi = new IntentFilter(UPDATES_DATA3);
+        ud = new UpdateData();
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateData(), inFi);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -193,6 +197,14 @@ public class FragYear extends Fragment {
             }
         });
         return year;
+    }
+
+    @Override
+    public void onDestroy() {
+        // Unregister since the activity is about to be closed.
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(us);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(ud);
+        super.onDestroy();
     }
 
     public class UpdateSensor extends BroadcastReceiver {
@@ -224,7 +236,7 @@ public class FragYear extends Fragment {
                 Log.v("Graph", graph);
                 final ImageView img = (ImageView) getActivity().findViewById(R.id.img);
                 Picasso.with(getActivity()).load(
-                        "http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
+                        "http://chart.apis.google.com/chart?cht=lc&chs=400x250" +
                                 "&chd=t:"+graph+"&chl=time").into(img);
             }
         }

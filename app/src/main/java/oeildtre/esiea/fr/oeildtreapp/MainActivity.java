@@ -1,13 +1,8 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +13,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     Toolbar toolbar;
@@ -27,12 +25,17 @@ public class MainActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
+    private ArrayList<Fragment> frag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        frag = new ArrayList<>();
+        frag.add(new FragDay());
+        frag.add(new FragMonth());
+        frag.add(new FragYear());
 
         mTitle = mDrawerTitle = getTitle();
         mNavigationDrawerItemTitles = getResources().getStringArray(R.array.navigation_drawer_items_array);
@@ -41,12 +44,13 @@ public class MainActivity extends AppCompatActivity {
 
         setupToolbar();
 
-        DataModel[] drawerItem = new DataModel[4];
+        DataModel[] drawerItem = new DataModel[5];
 
-        drawerItem[0] = new DataModel(R.drawable.connect, "Day");
-        drawerItem[1] = new DataModel(R.drawable.fixtures, "Month");
-        drawerItem[2] = new DataModel(R.drawable.table, "Year");
+        drawerItem[0] = new DataModel(R.drawable.jour2, "Day");
+        drawerItem[1] = new DataModel(R.drawable.mois2, "Month");
+        drawerItem[2] = new DataModel(R.drawable.annee2, "Year");
         drawerItem[3] = new DataModel(R.drawable.table, "Camera");
+        drawerItem[4] = new DataModel(R.drawable.table, "Medias");
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
 
@@ -60,33 +64,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void selectItem(int position) {
-
         Fragment fragment = null;
-
-        /*DetailFragment fragment = (DetailFragment) getFragmentManager().
-                findFragmentById(R.id.detail_frag);
-        if (fragment==null || ! fragment.isInLayout()) {
-            // start new Activity
-        }
-        else {
-            fragment.update(...);*/
         switch (position) {
             case 0:
-                fragment = new FragDay();
+                fragment = frag.get(0);
                 break;
             case 1:
-                fragment = new FragMonth();
+                fragment = frag.get(1);
                 break;
             case 2:
-                fragment = new FragYear();
+                fragment = frag.get(2);
                 break;
             case 3:
                 fragment = new Camera();
-
+                break;
             default:
                 break;
         }
-
         if (fragment != null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
@@ -95,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
             mDrawerList.setSelection(position);
             setTitle(mNavigationDrawerItemTitles[position]);
             mDrawerLayout.closeDrawer(mDrawerList);
-
         } else {
             Log.e("MainActivity", "Error in creating fragment");
         }
