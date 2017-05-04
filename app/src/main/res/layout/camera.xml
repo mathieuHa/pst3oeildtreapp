@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:stream="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="oeildtre.esiea.fr.oeildtreapp.Camera">
 
     <com.github.niqdev.mjpeg.MjpegSurfaceView
         android:id="@+id/mjpegViewDefault"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        stream:type="stream_default" />
-
-    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        stream:type="stream_default" />
+
+
+    <!--<LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/mjpegViewDefault"
+        android:layout_marginStart="35dp"
+        android:layout_marginBottom="61dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -37,7 +43,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
@@ -73,16 +79,5 @@
                 android:layout_weight="1" />
         </LinearLayout>
 
-    </LinearLayout>
-
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <SurfaceView
-            android:id="@+id/surfaceView"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
-    </RelativeLayout>
-
-</LinearLayout>
+    </LinearLayout>-->
+</RelativeLayout>

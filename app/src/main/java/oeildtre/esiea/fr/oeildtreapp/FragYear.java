@@ -37,9 +37,9 @@ public class FragYear extends Fragment {
     private JSONArray list_data;
     private String sensor;
     private String link, link2;
-    private String web = "/dailydata/year?year=2018";
+    private String web = "/dailydata/year?year=2017";
     private boolean fini = false;
-
+    //http://mathieuhanotaux.ddns.net/pst3oeildtre/web/app.php/sensors/4/dailydata/year?year=2017
     private UpdateSensor us;
     private UpdateData ud;
 

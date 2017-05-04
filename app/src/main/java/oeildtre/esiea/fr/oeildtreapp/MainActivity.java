@@ -1,6 +1,7 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -25,17 +26,11 @@ public class MainActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private ArrayList<Fragment> frag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        frag = new ArrayList<>();
-        frag.add(new FragDay());
-        frag.add(new FragMonth());
-        frag.add(new FragYear());
 
         mTitle = mDrawerTitle = getTitle();
         mNavigationDrawerItemTitles = getResources().getStringArray(R.array.navigation_drawer_items_array);
@@ -67,16 +62,17 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment = null;
         switch (position) {
             case 0:
-                fragment = frag.get(0);
+                fragment = new FragDay();
                 break;
             case 1:
-                fragment = frag.get(1);
+                fragment = new FragMonth();
                 break;
             case 2:
-                fragment = frag.get(2);
+                fragment = new FragYear();
                 break;
             case 3:
-                fragment = new Camera();
+                Intent intent = new Intent(MainActivity.this, Camera.class);
+                startActivity(intent);
                 break;
             default:
                 break;
