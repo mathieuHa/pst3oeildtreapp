@@ -2,10 +2,13 @@ package oeildtre.esiea.fr.oeildtreapp;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.util.Log;
@@ -21,18 +24,7 @@ import java.util.List;
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     private static final String TAG = "CustomAdapter";
 
-    private String[] mDataSet;
     private List<ItemRecyclerView> mDataSet2;
-    private Context context;
-
-    /**
-     * Initialize the dataset of the Adapter.
-     *
-     * @param dataSet String[] containing the data to populate views to be used by RecyclerView.
-     */
-    public CustomAdapter(String[] dataSet) {
-        mDataSet = dataSet;
-    }
 
     public CustomAdapter(List<ItemRecyclerView> dataSet) {
         mDataSet2 = dataSet;
@@ -42,11 +34,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         // Create a new view.
-
         View v = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.item, viewGroup, false);
-        ViewHolder vh = new ViewHolder(v);
-        context = viewGroup.getContext();
         return new ViewHolder(v);
     }
 
@@ -75,6 +64,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
         private final ImageView imageView;
+        private final ImageButton join;
 
         public ViewHolder(View v) {
             super(v);
@@ -85,15 +75,28 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
                     Log.d(TAG, "Element " + getAdapterPosition() + " clicked.");
                 }
             });
+            /*getJoin()*/
             textView = (TextView) v.findViewById(R.id.textView);
             imageView = (ImageView) v.findViewById(R.id.img);
+            join = (ImageButton) v.findViewById(R.id.join);
+            join.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Uri smsUri = Uri.parse("tel:0674429272");
+                    Intent returnIt = new Intent(Intent.ACTION_VIEW, smsUri);
+                    returnIt.putExtra("sms_body", "Va voir sur l'app OeilDeLaDtre, tu vas kiffer ;)");
+                    returnIt.setType("vnd.android-dir/mms-sms");
+                    Log.e("SMS","Element n° : ");
+                }
+            });
         }
 
-        public TextView getTextView() {
-            return textView;
-        }
+        public TextView getTextView() {return textView;}
         public ImageView getImageView() {
             return imageView;
+        }
+        public ImageButton getJoin() {
+            return join;
         }
     }
 }

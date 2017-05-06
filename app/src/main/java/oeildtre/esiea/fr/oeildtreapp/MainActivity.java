@@ -71,8 +71,7 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new FragYear();
                 break;
             case 3:
-                Intent intent = new Intent(MainActivity.this, Camera.class);
-                startActivity(intent);
+                fragment = new Camera();
                 break;
             case 4:
                 fragment = new Medias();

@@ -1,67 +1,21 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.widget.Toast;
 
-import com.github.niqdev.mjpeg.DisplayMode;
-import com.github.niqdev.mjpeg.Mjpeg;
-import com.github.niqdev.mjpeg.MjpegView;
+        import android.os.Bundle;
+        import android.support.v4.app.Fragment;
+        import android.view.LayoutInflater;
+        import android.view.View;
+        import android.view.ViewGroup;
+        import android.webkit.WebView;
 
+public class Camera extends Fragment {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-public class Camera extends AppCompatActivity {
+        View cam = inflater.inflate(R.layout.camera, container, false);
+        WebView webView=(WebView) cam.findViewById(R.id.webView);
 
-    private static final int TIMEOUT = 5;
-
-    MjpegView mjpegView;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.camera);
-        mjpegView = (MjpegView) findViewById(R.id.mjpegViewDefault);
+        webView.loadUrl("http://mathieuhanotaux.ddns.net:8090/?action=stream");
+        return cam;
     }
-
-    private String getPreference(String key) {
-        return PreferenceManager
-                .getDefaultSharedPreferences(this)
-                .getString(key, "");
-    }
-
-    private DisplayMode calculateDisplayMode() {
-        int orientation = getResources().getConfiguration().orientation;
-        return orientation == Configuration.ORIENTATION_LANDSCAPE ?
-                DisplayMode.FULLSCREEN : DisplayMode.BEST_FIT;
-    }
-
-    private void loadIpCam() {
-        Mjpeg.newInstance()
-                .open(getPreference(""), TIMEOUT)
-                .subscribe(
-                        inputStream -> {
-                            mjpegView.setSource(inputStream);
-                            mjpegView.setDisplayMode(calculateDisplayMode());
-                            mjpegView.showFps(true);
-                        },
-                        throwable -> {
-                            Log.e(getClass().getSimpleName(), "mjpeg error", throwable);
-                            Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
-                        });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        loadIpCam();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mjpegView.stopPlayback();
-    }
-
 }
