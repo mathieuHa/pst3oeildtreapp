@@ -1,7 +1,6 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -15,18 +14,14 @@ import android.util.Log;
 
 import com.squareup.picasso.Picasso;
 
-import java.net.URL;
 import java.util.List;
 
-/**
- * Provide views to RecyclerView with data from mDataSet.
- */
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     private static final String TAG = "CustomAdapter";
 
     private List<ItemRecyclerView> mDataSet2;
 
-    public CustomAdapter(List<ItemRecyclerView> dataSet) {
+    CustomAdapter(List<ItemRecyclerView> dataSet) {
         mDataSet2 = dataSet;
     }
 
@@ -73,30 +68,27 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, "Element " + getAdapterPosition() + " clicked.");
+                    getJoin().setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Uri smsUri = Uri.parse("tel:0674429272");
+                            Intent returnIt = new Intent(Intent.ACTION_VIEW, smsUri);
+                            returnIt.putExtra("sms_body", "Va voir sur l'app OeilDeLaDtre, tu vas kiffer ;)");
+                            returnIt.setType("vnd.android-dir/mms-sms");
+                            Log.e("SMS","Element n° : ");
+                        }
+                    });
                 }
             });
-            /*getJoin()*/
             textView = (TextView) v.findViewById(R.id.textView);
             imageView = (ImageView) v.findViewById(R.id.img);
             join = (ImageButton) v.findViewById(R.id.join);
-            join.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Uri smsUri = Uri.parse("tel:0674429272");
-                    Intent returnIt = new Intent(Intent.ACTION_VIEW, smsUri);
-                    returnIt.putExtra("sms_body", "Va voir sur l'app OeilDeLaDtre, tu vas kiffer ;)");
-                    returnIt.setType("vnd.android-dir/mms-sms");
-                    Log.e("SMS","Element n° : ");
-                }
-            });
         }
 
-        public TextView getTextView() {return textView;}
-        public ImageView getImageView() {
+        TextView getTextView() { return textView; }
+        ImageView getImageView() {
             return imageView;
         }
-        public ImageButton getJoin() {
-            return join;
-        }
+        ImageButton getJoin() { return join; }
     }
 }

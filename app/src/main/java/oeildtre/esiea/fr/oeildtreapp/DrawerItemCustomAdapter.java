@@ -1,9 +1,5 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
-/**
- * Created by Max on 01/05/2017.
- */
-
         import android.app.Activity;
         import android.content.Context;
         import android.view.LayoutInflater;
@@ -15,9 +11,9 @@ package oeildtre.esiea.fr.oeildtreapp;
 
 public class DrawerItemCustomAdapter extends ArrayAdapter<DataModel> {
 
-    Context mContext;
-    int layoutResourceId;
-    DataModel data[] = null;
+    private Context mContext;
+    private int layoutResourceId;
+    private DataModel data[] = null;
 
     public DrawerItemCustomAdapter(Context mContext, int layoutResourceId, DataModel[] data) {
 
@@ -41,8 +37,8 @@ public class DrawerItemCustomAdapter extends ArrayAdapter<DataModel> {
         DataModel folder = data[position];
 
 
-        imageViewIcon.setImageResource(folder.icon);
-        textViewName.setText(folder.name);
+        imageViewIcon.setImageResource(folder.getIcon());
+        textViewName.setText(folder.getName());
 
         return listItem;
     }

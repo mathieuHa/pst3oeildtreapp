@@ -33,7 +33,7 @@ import java.util.Calendar;
 public class FragMonth extends Fragment {
     public static final String UPDATES_SENSOR2="UPDATES_SENSOR2";
     public static final String UPDATES_DATA2="UPDATES_DATA2";
-    private JSONArray list_obj, list_data;
+    private JSONArray list_obj;
     private String sensor;
     private String link, link2;
     private String web = "/dailydata/month?month=3&year=2017";
@@ -47,8 +47,8 @@ public class FragMonth extends Fragment {
         try {
             InputStream is = new FileInputStream(getActivity().getCacheDir() + "/"+param1+param2+".json");
             byte[] buffer = new byte[is.available()];
-            is.read(buffer);
-            is.close();
+            //is.read(buffer);
+            //is.close();
             return new JSONArray(new String(buffer, "UTF-8"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -84,7 +84,7 @@ public class FragMonth extends Fragment {
         temp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fini == true && temp.isChecked()) {
+                if (fini && temp.isChecked()) {
                     humi.setChecked(false);
                     son.setChecked(false);
                     lum.setChecked(false);
@@ -107,7 +107,7 @@ public class FragMonth extends Fragment {
         lum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fini == true && lum.isChecked()) {
+                if (fini && lum.isChecked()) {
                     humi.setChecked(false);
                     son.setChecked(false);
                     temp.setChecked(false);
@@ -130,7 +130,7 @@ public class FragMonth extends Fragment {
         humi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fini == true && humi.isChecked()) {
+                if (fini && humi.isChecked()) {
                     temp.setChecked(false);
                     son.setChecked(false);
                     lum.setChecked(false);
@@ -153,7 +153,7 @@ public class FragMonth extends Fragment {
         son.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fini == true && son.isChecked()) {
+                if (fini && son.isChecked()) {
                     humi.setChecked(false);
                     temp.setChecked(false);
                     lum.setChecked(false);
@@ -192,7 +192,7 @@ public class FragMonth extends Fragment {
                                                   int monthOfYear, int dayOfMonth) {
                                 text.setText((monthOfYear + 1) + "/" + year);
                                 web = "/dailydata/month?month="+monthOfYear+"&year="+year;
-                                GraphService.startActionBaz2(getContext(), "sensors", link2+web);
+                                if (fini) GraphService.startActionBaz2(getContext(), "sensors", link2+web);
                             }
                         }, mYear, mMonth, mDay);
                 dpd.show();
@@ -213,7 +213,7 @@ public class FragMonth extends Fragment {
             if (null != intent) {
                 list_obj = getFromFile("sensors","");
                 Log.d("FM.USensor", list_obj.toString());
-                fini = true;
+                if (list_obj.length() > 0) fini = true;
             }
         }
     }
@@ -223,7 +223,7 @@ public class FragMonth extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
                 String graph="", graphMax="", graphMin="";
-                list_data = getFromFile("sensors", "_data2");
+                JSONArray list_data = getFromFile("sensors", "_data2");
                 Log.d("FM.UData", list_data.toString());
                 for(int i = 0; i<list_data.length();i++){
                     try {
@@ -240,7 +240,7 @@ public class FragMonth extends Fragment {
                 Log.v("Graph", graph);
                 final ImageView img = (ImageView) getActivity().findViewById(R.id.img);
                 Picasso.with(getActivity()).load(
-                        "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:|1j|8j|16j|24j|31j&chd=t:"+
+                        "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps/"+sensor+"||0:|1j|8j|16j|24j|31j&chd=t:"+
                                 graph+"|"+graphMax+"|"+graphMin+"&chs=400x250&chco=FF0000,FFFF00,00FFFF&chg=25,33,1,5").into(img);
             }
         }

@@ -6,35 +6,23 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Demonstrates the use of {@link RecyclerView} with a {@link LinearLayoutManager} and a
- * {@link GridLayoutManager}.
- */
 public class Medias extends Fragment {
 
     private static final String TAG = "RecyclerViewFragment";
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
     private static final int SPAN_COUNT = 2;
-    private static final int DATASET_COUNT = 60;
+    //private static final int DATASET_COUNT = 60;
     protected LayoutManagerType mCurrentLayoutManagerType;
-    protected RadioButton mLinearLayoutRadioButton;
-    protected RadioButton mGridLayoutRadioButton;
     protected RecyclerView mRecyclerView;
     protected CustomAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
-    protected String[] mDataset;
-    private List<ItemRecyclerView> cities = new ArrayList<>();
+    private List<ItemRecyclerView> item = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,7 +55,7 @@ public class Medias extends Fragment {
         }
         setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
 
-        mAdapter = new CustomAdapter(cities);
+        mAdapter = new CustomAdapter(item);
         // Set CustomAdapter as the adapter for RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
         setRecyclerViewLayoutManager(LayoutManagerType.LINEAR_LAYOUT_MANAGER);
@@ -119,12 +107,13 @@ public class Medias extends Fragment {
      * from a local content provider or remote server.
      */
     private void initDataset() {
-        cities.add(new ItemRecyclerView("Mathieu","http://mathieuhanotaux.ddns.net/camera/media/im_0010_20170504_100814.jpg.i0010.th.jpg"));
-        cities.add(new ItemRecyclerView("Max","http://mathieuhanotaux.ddns.net/camera/media/im_0012_20170504_102236.jpg.i0012.th.jpg"));
-        cities.add(new ItemRecyclerView("Borgo","http://mathieuhanotaux.ddns.net/camera/media/im_0016_20170505_164941.jpg.i0016.th.jpg"));
-        cities.add(new ItemRecyclerView("Toto","http://mathieuhanotaux.ddns.net/camera/media/tl_0013_0001_20170504_164623.jpg.t0013.th.jpg"));
-        cities.add(new ItemRecyclerView("Max","http://mathieuhanotaux.ddns.net/camera/media/vi_0015_20170505_145126.mp4.v0015.th.jpg"));
-        cities.add(new ItemRecyclerView("Toto","http://mathieuhanotaux.ddns.net/camera/media/vi_0014_20170504_134116.mp4.v0014.th.jpg"));
+        GraphService gs = new GraphService();
+        item.add(new ItemRecyclerView("Mathieu",gs.getSource() + "/camera/media/im_0010_20170504_100814.jpg.i0010.th.jpg"));
+        item.add(new ItemRecyclerView("Max",gs.getSource() + "/camera/media/im_0012_20170504_102236.jpg.i0012.th.jpg"));
+        item.add(new ItemRecyclerView("Borgo",gs.getSource() + "/camera/media/im_0016_20170505_164941.jpg.i0016.th.jpg"));
+        item.add(new ItemRecyclerView("Toto",gs.getSource() + "/camera/media/tl_0013_0001_20170504_164623.jpg.t0013.th.jpg"));
+        item.add(new ItemRecyclerView("Max",gs.getSource() + "/camera/media/vi_0015_20170505_145126.mp4.v0015.th.jpg"));
+        item.add(new ItemRecyclerView("Toto",gs.getSource() + "/camera/media/vi_0014_20170504_134116.mp4.v0014.th.jpg"));
     }
 
     private enum LayoutManagerType {

@@ -34,7 +34,6 @@ public class FragYear extends Fragment {
     public static final String UPDATES_SENSOR3="UPDATES_SENSOR3";
     public static final String UPDATES_DATA3="UPDATES_DATA3";
     private JSONArray list_obj;
-    private JSONArray list_data;
     private String sensor;
     private String link, link2;
     private String web = "/dailydata/year?year=2017";
@@ -47,8 +46,8 @@ public class FragYear extends Fragment {
         try {
             InputStream is = new FileInputStream(getActivity().getCacheDir() + "/"+param1+param2+".json");
             byte[] buffer = new byte[is.available()];
-            is.read(buffer);
-            is.close();
+            //is.read(buffer);
+            //is.close();
             return new JSONArray(new String(buffer, "UTF-8"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -82,7 +81,7 @@ public class FragYear extends Fragment {
         temp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(fini == true && temp.isChecked()) {
+                if(fini && temp.isChecked()) {
                     humi.setChecked(false);
                     son.setChecked(false);
                     lum.setChecked(false);
@@ -105,7 +104,7 @@ public class FragYear extends Fragment {
         lum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fini == true && lum.isChecked()){
+                if (fini && lum.isChecked()){
                     humi.setChecked(false);
                     son.setChecked(false);
                     temp.setChecked(false);
@@ -128,7 +127,7 @@ public class FragYear extends Fragment {
         humi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fini == true && humi.isChecked()) {
+                if (fini && humi.isChecked()) {
                     temp.setChecked(false);
                     son.setChecked(false);
                     lum.setChecked(false);
@@ -151,7 +150,7 @@ public class FragYear extends Fragment {
         son.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fini == true && son.isChecked()) {
+                if (fini && son.isChecked()) {
                     humi.setChecked(false);
                     temp.setChecked(false);
                     lum.setChecked(false);
@@ -188,9 +187,9 @@ public class FragYear extends Fragment {
                             @Override
                             public void onDateSet(DatePicker view, int year,
                                                   int monthOfYear, int dayOfMonth) {
-                                text.setText(year);
+                                text.setText((monthOfYear + 1) + "/" + year);
                                 web = "/dailydata/year?year="+year;
-                                GraphService.startActionBaz3(getContext(), "sensors", link2+web);
+                                if (fini) GraphService.startActionBaz2(getContext(), "sensors", link2+web);
                             }
                         }, mYear, mMonth, mDay);
                 dpd.show();
@@ -213,7 +212,7 @@ public class FragYear extends Fragment {
             if (null != intent) {
                 list_obj = getFromFile("sensors","");
                 Log.d("FY.USensor", list_obj.toString());
-                fini = true;
+                if (list_obj.length() > 0) fini = true;
             }
         }
     }
@@ -223,7 +222,7 @@ public class FragYear extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
                 String graph="";
-                list_data = getFromFile("sensors", "_data3");
+                JSONArray list_data = getFromFile("sensors", "_data3");
                 Log.d("FY.UData", list_data.toString());
                 for(int i = 0; i<list_data.length();i++){
                     try {

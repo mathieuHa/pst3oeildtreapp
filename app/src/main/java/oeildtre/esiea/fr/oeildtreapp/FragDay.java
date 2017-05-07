@@ -2,17 +2,13 @@ package oeildtre.esiea.fr.oeildtreapp;
 
 
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,10 +17,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -41,7 +35,7 @@ import java.util.Calendar;
 public class FragDay extends Fragment {
     public static final String UPDATES_SENSORS1="UPDATES_SENSORS1";
     public static final String UPDATES_DATA1="UPDATES_DATA1";
-    private JSONArray list_obj, list_data;
+    private JSONArray list_obj;
     private String sensor;
     private String link, link2;
     private String web = "/data/day?day=19&month=2&year=2017";
@@ -54,8 +48,8 @@ public class FragDay extends Fragment {
             InputStream is = new FileInputStream(getContext().getCacheDir()+"/" + param1 + param2 + ".json");
             Log.d("FD.USensor", getActivity().getCacheDir() + "/" + param1 + param2 + ".json");
             byte[] buffer = new byte[is.available()];
-            is.read(buffer);
-            is.close();
+            //is.read(buffer);
+            //is.close();
             return new JSONArray(new String(buffer, "UTF-8"));
 
         } catch (FileNotFoundException e) {
@@ -91,7 +85,7 @@ public class FragDay extends Fragment {
         temp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(fini == true && temp.isChecked()) {
+                if(fini && temp.isChecked()) {
                     humi.setChecked(false);
                     son.setChecked(false);
                     lum.setChecked(false);
@@ -114,7 +108,7 @@ public class FragDay extends Fragment {
         lum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fini == true && lum.isChecked()){
+                if (fini && lum.isChecked()){
                     humi.setChecked(false);
                     son.setChecked(false);
                     temp.setChecked(false);
@@ -137,7 +131,7 @@ public class FragDay extends Fragment {
         humi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fini == true && humi.isChecked()) {
+                if (fini && humi.isChecked()) {
                     temp.setChecked(false);
                     son.setChecked(false);
                     lum.setChecked(false);
@@ -160,7 +154,7 @@ public class FragDay extends Fragment {
         son.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fini == true && son.isChecked()) {
+                if (fini && son.isChecked()) {
                     humi.setChecked(false);
                     temp.setChecked(false);
                     lum.setChecked(false);
@@ -201,7 +195,7 @@ public class FragDay extends Fragment {
                                 text.setText(dayOfMonth + "/"
                                         + (monthOfYear + 1) + "/" + year);
                                 web = "/data/day?day="+dayOfMonth+"&month="+(monthOfYear+1)+"&year="+year;
-                                GraphService.startActionBaz1(getContext(), "sensors", link2+web);
+                                if (fini) GraphService.startActionBaz1(getContext(), "sensors", link2+web);
                             }
                         }, mYear, mMonth, mDay);
                 dpd.show();
@@ -223,7 +217,7 @@ public class FragDay extends Fragment {
             if (null != intent) {
                 list_obj = getFromFile("sensors","");
                 Log.d("FD.Sensor", list_obj.toString());
-                fini = true;
+                if(list_obj.length() > 0) fini = true;
             }
         }
     }
@@ -233,7 +227,7 @@ public class FragDay extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
                 String graph="";
-                list_data = getFromFile("sensors", "_data1");
+                JSONArray list_data = getFromFile("sensors", "_data1");
                 Log.d("FD.Data", list_data.toString());
                 for(int i = 0; i<24*2;i++){
                     try {
@@ -251,7 +245,7 @@ public class FragDay extends Fragment {
                 Picasso.with(getActivity()).load(
                         //"http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
                               //  "&chd=t:"+graph+"&chl=time").into(img);
-                "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:|0h|6h|12h|18h|24h&chd=t:"+
+                "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps/"+sensor+"||0:|0h|6h|12h|18h|24h&chd=t:"+
                         graph+"&chs=400x250&chco=FF0000&chg=25,33,1,5"/*&chxs=0,0000dd,10|1,0000dd,12,0"*/).into(img);
             }
         }
