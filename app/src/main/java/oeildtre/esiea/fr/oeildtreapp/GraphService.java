@@ -19,8 +19,8 @@ import java.net.URL;
 public class GraphService extends IntentService {
     private static final String ACTION_FOO = "oeildtre.esiea.fr.oeildtreapp.action.FOO";
     private static final String ACTION_BAZ1 = "oeildtre.esiea.fr.oeildtreapp.action.BAZ1";
-    private static final String ACTION_BAZ2 = "oeildtre.esiea.fr.oeildtreapp.action.BAZ2";
-    private static final String ACTION_BAZ3 = "oeildtre.esiea.fr.oeildtreapp.action.BAZ3";
+    //private static final String ACTION_BAZ2 = "oeildtre.esiea.fr.oeildtreapp.action.BAZ2";
+    //private static final String ACTION_BAZ3 = "oeildtre.esiea.fr.oeildtreapp.action.BAZ3";
 
     private static final String EXTRA_PARAM1 = "oeildtre.esiea.fr.oeildtreapp.extra.PARAM1";
     private static final String EXTRA_PARAM2 = "oeildtre.esiea.fr.oeildtreapp.extra.PARAM2";
@@ -36,7 +36,7 @@ public class GraphService extends IntentService {
         context.startService(intent);
     }
 
-    public static void startActionBaz1(Context context, String param1, String param2) {
+    public static void startActionBaz(Context context, String param1, String param2) {
         Intent intent = new Intent(context, GraphService.class);
         intent.setAction(ACTION_BAZ1);
         intent.putExtra(EXTRA_PARAM1, param1);
@@ -44,7 +44,7 @@ public class GraphService extends IntentService {
         context.startService(intent);
     }
 
-    public static void startActionBaz2(Context context, String param1, String param2) {
+    /*public static void startActionBaz2(Context context, String param1, String param2) {
         Intent intent = new Intent(context, GraphService.class);
         intent.setAction(ACTION_BAZ2);
         intent.putExtra(EXTRA_PARAM1, param1);
@@ -58,7 +58,7 @@ public class GraphService extends IntentService {
         intent.putExtra(EXTRA_PARAM1, param1);
         intent.putExtra(EXTRA_PARAM2, param2);
         context.startService(intent);
-    }
+    }*/
 
     public String getSource(){
         return source;
@@ -70,13 +70,13 @@ public class GraphService extends IntentService {
             final String action = intent.getAction();
             if (ACTION_FOO.equals(action)) {
                 final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1,param2);
+                //final String param2 = intent.getStringExtra(EXTRA_PARAM2);
+                handleActionFoo(param1);
             } else if (ACTION_BAZ1.equals(action)) {
                 final String param1 = intent.getStringExtra(EXTRA_PARAM1);
                 final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionBaz1(param1, param2);
-            } else if (ACTION_BAZ2.equals(action)) {
+                handleActionBaz(param1, param2);
+            }/* else if (ACTION_BAZ2.equals(action)) {
                 final String param1 = intent.getStringExtra(EXTRA_PARAM1);
                 final String param2 = intent.getStringExtra(EXTRA_PARAM2);
                 handleActionBaz2(param1, param2);
@@ -84,7 +84,7 @@ public class GraphService extends IntentService {
                 final String param1 = intent.getStringExtra(EXTRA_PARAM1);
                 final String param2 = intent.getStringExtra(EXTRA_PARAM2);
                 handleActionBaz3(param1, param2);
-            }
+            }*/
         }
     }
 
@@ -92,7 +92,7 @@ public class GraphService extends IntentService {
      * Handle action Foo in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionFoo(String param1, String param2) {
+    private void handleActionFoo(String param1) {
         Log.d("Max","Thread service name : " + Thread.currentThread().getName());
         try {
             URL url = new URL ("http://"+source+"/pst3oeildtre/web/app.php/"+param1);
@@ -110,12 +110,7 @@ public class GraphService extends IntentService {
             e.printStackTrace();
             Log.i("","");
         }
-        switch(param2) {
-            case "day": LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_SENSORS1));break;
-            case "month" : LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragMonth.UPDATES_SENSOR2));break;
-            case "year" : LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_SENSOR3));break;
-            default : Log.e("Raté",param2);break;
-        }
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_SENSORS));
     }
 
     private void copyInputStreamToFile (InputStream in, File file){
@@ -140,7 +135,7 @@ public class GraphService extends IntentService {
      * Handle action Baz in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionBaz1(String param1, String param2) {
+    private void handleActionBaz(String param1, String param2) {
         Log.d("Max","Thread service name : " + Thread.currentThread().getName());
         try {
             URL url = new URL ("http://"+source+"/pst3oeildtre/web/app.php/"+param1+param2);
@@ -150,7 +145,7 @@ public class GraphService extends IntentService {
             connection.connect();
             if (HttpURLConnection.HTTP_OK == connection.getResponseCode()){
                 copyInputStreamToFile(connection.getInputStream(),
-                        new File(getCacheDir(), "/sensors_data1.json"));
+                        new File(getCacheDir(), "/sensors_data.json"));
                 Log.d("Max",param1+param2+" DL");
             }
         } catch (MalformedURLException e) {
@@ -159,9 +154,9 @@ public class GraphService extends IntentService {
             Log.i("","");
             e.printStackTrace();
         }
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_DATA1));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_DATA));
     }
-    private void handleActionBaz2(String param1, String param2) {
+    /*private void handleActionBaz2(String param1, String param2) {
         Log.d("Max","Thread service name : " + Thread.currentThread().getName());
         try {
             URL url = new URL ("http://"+source+"/pst3oeildtre/web/app.php/"+param1+param2);
@@ -202,7 +197,7 @@ public class GraphService extends IntentService {
             e.printStackTrace();
         }
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_DATA3));
-    }
+    }*/
 }
 
 

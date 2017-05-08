@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">OeilDtreApp</string>
     <string-array name="navigation_drawer_items_array">
+        <item>Connexion</item>
         <item>Day</item>
         <item>Month</item>
         <item>Year</item>

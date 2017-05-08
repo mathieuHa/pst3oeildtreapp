@@ -34,13 +34,13 @@ public class MainActivity extends AppCompatActivity {
 
         setupToolbar();
 
-        DataModel[] drawerItem = new DataModel[5];
-
-        drawerItem[0] = new DataModel(R.drawable.jour2, "Day");
-        drawerItem[1] = new DataModel(R.drawable.mois2, "Month");
-        drawerItem[2] = new DataModel(R.drawable.annee2, "Year");
-        drawerItem[3] = new DataModel(R.drawable.table, "Camera");
-        drawerItem[4] = new DataModel(R.drawable.table, "Medias");
+        DataModel[] drawerItem = new DataModel[6];
+        drawerItem[0] = new DataModel(R.drawable.table, "Connexion");
+        drawerItem[1] = new DataModel(R.drawable.jour2, "Day");
+        drawerItem[2] = new DataModel(R.drawable.mois2, "Month");
+        drawerItem[3] = new DataModel(R.drawable.annee2, "Year");
+        drawerItem[4] = new DataModel(R.drawable.table, "Camera");
+        drawerItem[5] = new DataModel(R.drawable.table, "Medias");
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
 
@@ -50,25 +50,27 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         setupDrawerToggle();
-
     }
 
     private void selectItem(int position) {
         Fragment fragment = null;
         switch (position) {
             case 0:
-                fragment = new FragDay();
+                fragment = new Connexion();
                 break;
             case 1:
-                fragment = new FragMonth();
+                fragment = new FragDay();
                 break;
             case 2:
-                fragment = new FragYear();
+                fragment = new FragMonth();
                 break;
             case 3:
-                fragment = new Camera();
+                fragment = new FragYear();
                 break;
             case 4:
+                fragment = new Camera();
+                break;
+            case 5:
                 fragment = new Medias();
                 break;
             default:

@@ -23,6 +23,7 @@ public class Medias extends Fragment {
     protected CustomAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
     private List<ItemRecyclerView> item = new ArrayList<>();
+    private GraphService gs = new GraphService();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,7 +108,6 @@ public class Medias extends Fragment {
      * from a local content provider or remote server.
      */
     private void initDataset() {
-        GraphService gs = new GraphService();
         item.add(new ItemRecyclerView("Mathieu",gs.getSource() + "/camera/media/im_0010_20170504_100814.jpg.i0010.th.jpg"));
         item.add(new ItemRecyclerView("Max",gs.getSource() + "/camera/media/im_0012_20170504_102236.jpg.i0012.th.jpg"));
         item.add(new ItemRecyclerView("Borgo",gs.getSource() + "/camera/media/im_0016_20170505_164941.jpg.i0016.th.jpg"));
