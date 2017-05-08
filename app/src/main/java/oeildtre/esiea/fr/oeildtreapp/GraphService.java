@@ -25,7 +25,7 @@ public class GraphService extends IntentService {
     private static final String EXTRA_PARAM1 = "oeildtre.esiea.fr.oeildtreapp.extra.PARAM1";
     private static final String EXTRA_PARAM2 = "oeildtre.esiea.fr.oeildtreapp.extra.PARAM2";
 
-    private static final String source = "mathieuhanotaux.ddns.net";
+    private static final String source = "http://hanotaux.fr";
     public GraphService() {super("GraphService");}
 
     public static void startActionFoo(Context context, String param1, String param2) {
@@ -95,7 +95,7 @@ public class GraphService extends IntentService {
     private void handleActionFoo(String param1) {
         Log.d("Max","Thread service name : " + Thread.currentThread().getName());
         try {
-            URL url = new URL ("http://"+source+"/pst3oeildtre/web/app.php/"+param1);
+            URL url = new URL (source+"/pst3oeildtre/web/app.php/"+param1);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
@@ -138,7 +138,7 @@ public class GraphService extends IntentService {
     private void handleActionBaz(String param1, String param2) {
         Log.d("Max","Thread service name : " + Thread.currentThread().getName());
         try {
-            URL url = new URL ("http://"+source+"/pst3oeildtre/web/app.php/"+param1+param2);
+            URL url = new URL (source+"/pst3oeildtre/web/app.php/"+param1+param2);
             Log.e("coq",url.toString());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");

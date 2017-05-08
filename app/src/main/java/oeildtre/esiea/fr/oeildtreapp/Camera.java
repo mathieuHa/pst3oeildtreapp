@@ -27,7 +27,7 @@ public class Camera extends Fragment {
         View cam = inflater.inflate(R.layout.camera, container, false);
         webView = (WebView) cam.findViewById(R.id.webView);
 
-        //webView.loadUrl("http://"+gs.getSource()+":8090/?action=stream");
+        //webView.loadUrl(gs.getSource()+":8090/?action=stream");
         webView.loadUrl("http://www.journaldugamer.com/files/2017/02/Zelda-Breath-of-the-wild-DLC.jpg");
         left = (ImageButton) cam.findViewById(R.id.left);
         up = (ImageButton) cam.findViewById(R.id.up);
