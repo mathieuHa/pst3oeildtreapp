@@ -1,6 +1,7 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
 
+        import android.content.SharedPreferences;
         import android.os.Bundle;
         import android.support.v4.app.Fragment;
         import android.util.Log;
@@ -20,15 +21,12 @@ public class Camera extends Fragment {
     private boolean visible = false;
     private GraphService gs = new GraphService();
 
-
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View cam = inflater.inflate(R.layout.camera, container, false);
         webView = (WebView) cam.findViewById(R.id.webView);
-
-        //webView.loadUrl(gs.getSource()+":8090/?action=stream");
-        webView.loadUrl("http://www.journaldugamer.com/files/2017/02/Zelda-Breath-of-the-wild-DLC.jpg");
+        webView.loadUrl("http://mathieuhanotaux.ddns.net:8090/?action=stream");
         left = (ImageButton) cam.findViewById(R.id.left);
         up = (ImageButton) cam.findViewById(R.id.up);
         down = (ImageButton) cam.findViewById(R.id.down);
@@ -39,13 +37,13 @@ public class Camera extends Fragment {
         left.setRotation(180);
         up.setRotation(-90);
         down.setRotation(90);
-        /*left.setAlpha(0);
-        up.setAlpha(0);
-        down.setAlpha(0);
-        right.setAlpha(0);
-        camera.setAlpha(0);
-        center.setAlpha(0);*/
         webView.bringToFront();
+
+        //Le TOKEN !!!
+        //Log.e("token", getContext().getSharedPreferences("MyPref",1).getString("Token",""));
+
+
+
         webView.setOnTouchListener(new View.OnTouchListener() {
 
             final static int FINGER_RELEASED = 0;
@@ -70,22 +68,9 @@ public class Camera extends Fragment {
                             Log.e("WebViewListener","click");
                             if (visible) {
                                 panel.bringToFront();
-                                /*left.setAlpha(100);
-                                up.setAlpha(100);
-                                down.setAlpha(100);
-                                right.setAlpha(100);
-                                camera.setAlpha(100);
-                                center.setAlpha(100);*/
-
                                 visible = false;
                             } else {
                                 webView.bringToFront();
-                                /*left.setAlpha(0);
-                                up.setAlpha(0);
-                                down.setAlpha(0);
-                                right.setAlpha(0);
-                                camera.setAlpha(0);
-                                center.setAlpha(0);*/
                                 visible = true;
                             }
                         }
