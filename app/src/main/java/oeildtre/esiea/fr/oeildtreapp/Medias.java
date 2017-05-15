@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,7 +56,7 @@ public class Medias extends Fragment {
         rootView.setTag(TAG);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
-
+        mRecyclerView.bringToFront();
         GraphService.startActionBaz2(getContext(),"media/images","");
         IntentFilter inF = new IntentFilter(UPDATES_IMAGES);
         ui = new UpdateImages();
@@ -156,7 +157,8 @@ public class Medias extends Fragment {
                     for (int i=0; i<list_obj.length();i++) {
                         String autor = list_obj.getJSONObject(i).getJSONObject("user").getString("login");
                         String url = gs.getMedia() +"/"+ list_obj.getJSONObject(i).getString("url");
-                        item.add(new ItemRecyclerView(autor, url));
+                        String urlth = gs.getMedia() +"/"+ list_obj.getJSONObject(i).getString("urlth");
+                        item.add(new ItemRecyclerView(autor, url, urlth));
                     }
                     mAdapter = new CustomAdapter(item);
                     // Set CustomAdapter as the adapter for RecyclerView.

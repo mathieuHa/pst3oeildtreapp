@@ -36,7 +36,7 @@ public class GraphService extends IntentService {
     private static final String EXTRA_PARAM1 = "oeildtre.esiea.fr.oeildtreapp.extra.PARAM1";
     private static final String EXTRA_PARAM2 = "oeildtre.esiea.fr.oeildtreapp.extra.PARAM2";
 
-    private static final String stream = "mathieuhanotaux.ddns.net";
+    private static final String stream = "http://mathieuhanotaux.ddns.net";
     private static final String api = "https://oeildtapi.hanotaux.fr/api";
     private static final String media = "https://oeildtmedia.hanotaux.fr";
 
