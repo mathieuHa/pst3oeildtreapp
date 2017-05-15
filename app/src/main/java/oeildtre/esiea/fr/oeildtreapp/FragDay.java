@@ -25,7 +25,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
@@ -53,14 +52,8 @@ public class FragDay extends Fragment {
             String text=new String(buffer);
             return new JSONArray(text);
 
-        } catch (FileNotFoundException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new JSONArray();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return new JSONArray();
         }
         return new JSONArray();
     }

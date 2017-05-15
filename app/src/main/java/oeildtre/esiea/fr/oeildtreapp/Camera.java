@@ -26,7 +26,7 @@ public class Camera extends Fragment {
 
         View cam = inflater.inflate(R.layout.camera, container, false);
         webView = (WebView) cam.findViewById(R.id.webView);
-        webView.loadUrl("http://mathieuhanotaux.ddns.net:8090/?action=stream");
+        webView.loadUrl(gs.getStream()+":8090/?action=stream");
         left = (ImageButton) cam.findViewById(R.id.left);
         up = (ImageButton) cam.findViewById(R.id.up);
         down = (ImageButton) cam.findViewById(R.id.down);

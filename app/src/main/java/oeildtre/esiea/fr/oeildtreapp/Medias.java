@@ -1,18 +1,34 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Medias extends Fragment {
+    public static final String UPDATES_IMAGES="UPDATES_IMAGES";
 
     private static final String TAG = "RecyclerViewFragment";
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
@@ -24,16 +40,14 @@ public class Medias extends Fragment {
     protected RecyclerView.LayoutManager mLayoutManager;
     private List<ItemRecyclerView> item = new ArrayList<>();
     private GraphService gs = new GraphService();
+    private UpdateImages ui;
+    private JSONArray list_obj;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Initialize dataset, this data would usually come from a local content provider or
-        // remote server.
-        initDataset();
+    public void onDestroy() {
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(ui);
+        super.onDestroy();
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -42,6 +56,10 @@ public class Medias extends Fragment {
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
 
+        GraphService.startActionBaz2(getContext(),"media/images","");
+        IntentFilter inF = new IntentFilter(UPDATES_IMAGES);
+        ui = new UpdateImages();
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(ui, inF);
         // LinearLayoutManager is used here, this will layout the elements in a similar fashion
         // to the way ListView would layout elements. The RecyclerView.LayoutManager defines how
         // elements are laid out.
@@ -56,10 +74,10 @@ public class Medias extends Fragment {
         }
         setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
 
-        mAdapter = new CustomAdapter(item);
+        //mAdapter = new CustomAdapter(item);
         // Set CustomAdapter as the adapter for RecyclerView.
-        mRecyclerView.setAdapter(mAdapter);
-        setRecyclerViewLayoutManager(LayoutManagerType.LINEAR_LAYOUT_MANAGER);
+        //mRecyclerView.setAdapter(mAdapter);
+        //setRecyclerViewLayoutManager(LayoutManagerType.LINEAR_LAYOUT_MANAGER);
 
         return rootView;
     }
@@ -103,21 +121,51 @@ public class Medias extends Fragment {
         super.onSaveInstanceState(savedInstanceState);
     }
 
+    public JSONArray getFromFile() {
+        try {
+            InputStream is = new FileInputStream(getContext().getCacheDir()+"/images.json");
+            int size=is.available();
+            byte[] buffer=new byte[size];
+            is.read(buffer);
+            is.close();
+            String text=new String(buffer);
+            return new JSONArray(text);
+
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return new JSONArray();
+    }
     /**
      * Generates Strings for RecyclerView's adapter. This data would usually come
      * from a local content provider or remote server.
      */
-    private void initDataset() {
-        item.add(new ItemRecyclerView("Mathieu",gs.getSource() + "/camera/media/im_0010_20170504_100814.jpg.i0010.th.jpg"));
-        item.add(new ItemRecyclerView("Max",gs.getSource() + "/camera/media/im_0012_20170504_102236.jpg.i0012.th.jpg"));
-        item.add(new ItemRecyclerView("Borgo",gs.getSource() + "/camera/media/im_0016_20170505_164941.jpg.i0016.th.jpg"));
-        item.add(new ItemRecyclerView("Toto",gs.getSource() + "/camera/media/tl_0013_0001_20170504_164623.jpg.t0013.th.jpg"));
-        item.add(new ItemRecyclerView("Max",gs.getSource() + "/camera/media/vi_0015_20170505_145126.mp4.v0015.th.jpg"));
-        item.add(new ItemRecyclerView("Toto",gs.getSource() + "/camera/media/vi_0014_20170504_134116.mp4.v0014.th.jpg"));
-    }
 
     private enum LayoutManagerType {
         GRID_LAYOUT_MANAGER,
         LINEAR_LAYOUT_MANAGER
+    }
+
+    public class UpdateImages extends BroadcastReceiver {
+        //@Override
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent) {
+                list_obj = getFromFile();
+                Log.d("Images", list_obj.toString());
+                try {
+                    for (int i=0; i<list_obj.length();i++) {
+                        String autor = list_obj.getJSONObject(i).getJSONObject("user").getString("login");
+                        String url = gs.getMedia() +"/"+ list_obj.getJSONObject(i).getString("url");
+                        item.add(new ItemRecyclerView(autor, url));
+                    }
+                    mAdapter = new CustomAdapter(item);
+                    // Set CustomAdapter as the adapter for RecyclerView.
+                    mRecyclerView.setAdapter(mAdapter);
+                    setRecyclerViewLayoutManager(LayoutManagerType.LINEAR_LAYOUT_MANAGER);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

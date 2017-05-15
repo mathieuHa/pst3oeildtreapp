@@ -31,15 +31,19 @@ public class GraphService extends IntentService {
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     private static final String ACTION_FOO = "oeildtre.esiea.fr.oeildtreapp.action.FOO";
     private static final String ACTION_BAZ1 = "oeildtre.esiea.fr.oeildtreapp.action.BAZ1";
+    private static final String ACTION_BAZ2 = "oeildtre.esiea.fr.oeildtreapp.action.BAZ2";
 
     private static final String EXTRA_PARAM1 = "oeildtre.esiea.fr.oeildtreapp.extra.PARAM1";
     private static final String EXTRA_PARAM2 = "oeildtre.esiea.fr.oeildtreapp.extra.PARAM2";
 
-    private static final String source = "mathieuhanotaux.ddns.net";
+    private static final String stream = "mathieuhanotaux.ddns.net";
     private static final String api = "https://oeildtapi.hanotaux.fr/api";
+    private static final String media = "https://oeildtmedia.hanotaux.fr";
 
 
-    public GraphService() {super("GraphService");}
+    public GraphService() {
+        super("GraphService");
+    }
 
     public static void startActionFoo(Context context, String param1, String param2) {
         Intent intent = new Intent(context, GraphService.class);
@@ -57,9 +61,20 @@ public class GraphService extends IntentService {
         context.startService(intent);
     }
 
+    public static void startActionBaz2(Context context, String param1, String param2) {
+        Intent intent = new Intent(context, GraphService.class);
+        intent.setAction(ACTION_BAZ2);
+        intent.putExtra(EXTRA_PARAM1, param1);
+        intent.putExtra(EXTRA_PARAM2, param2);
+        context.startService(intent);
+    }
 
-
-    public String getSource(){return source;}
+    public String getStream() {
+        return stream;
+    }
+    public String getMedia() {
+        return media;
+    }
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -68,11 +83,15 @@ public class GraphService extends IntentService {
             if (ACTION_FOO.equals(action)) {
                 final String param1 = intent.getStringExtra(EXTRA_PARAM1);
                 final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1,param2);
+                handleActionFoo(param1, param2);
             } else if (ACTION_BAZ1.equals(action)) {
                 final String param1 = intent.getStringExtra(EXTRA_PARAM1);
                 final String param2 = intent.getStringExtra(EXTRA_PARAM2);
                 handleActionBaz1(param1, param2);
+            } else if (ACTION_BAZ2.equals(action)) {
+                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
+                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
+                handleActionBaz2(param1, param2);
             }
         }
     }
@@ -82,36 +101,44 @@ public class GraphService extends IntentService {
      * parameters.
      */
     private void handleActionFoo(String param1, String param2) {
-        Log.d("Max","Thread service name : " + Thread.currentThread().getName());
+        Log.d("Max", "Thread service name : " + Thread.currentThread().getName());
         try {
-            URL url = new URL (api+"/"+param1);
+            URL url = new URL(api + "/" + param1);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setRequestProperty("X-Auth-Token",getApplicationContext().getSharedPreferences("MyPref",1).getString("Token","xx"));
+            connection.setRequestProperty("X-Auth-Token", getApplicationContext().getSharedPreferences("MyPref", 1).getString("Token", "xx"));
             connection.connect();
-            if (HttpsURLConnection.HTTP_OK == connection.getResponseCode()){
-                Log.i("Code et Reponse",connection.getResponseMessage()+" "+connection.getResponseCode());
-                copyInputStreamToFile(connection.getInputStream(), new File(getCacheDir()+"/"+param1+".json"));
-                Log.d("Sensors",param1+".json DL");
+            if (HttpsURLConnection.HTTP_OK == connection.getResponseCode()) {
+                Log.i("Code et Reponse", connection.getResponseMessage() + " " + connection.getResponseCode());
+                copyInputStreamToFile(connection.getInputStream(), new File(getCacheDir() + "/" + param1 + ".json"));
+                Log.d("Sensors", param1 + ".json DL");
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        switch(param2) {
-            case "day": LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_SENSORS1));break;
-            case "month" : LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragMonth.UPDATES_SENSOR2));break;
-            case "year" : LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_SENSOR3));break;
-            default : Log.e("Raté",param2);break;
+        switch (param2) {
+            case "day":
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_SENSORS1));
+                break;
+            case "month":
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragMonth.UPDATES_SENSOR2));
+                break;
+            case "year":
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_SENSOR3));
+                break;
+            default:
+                Log.e("Raté", param2);
+                break;
         }
     }
 
-    private void copyInputStreamToFile (InputStream in, File file){
+    private void copyInputStreamToFile(InputStream in, File file) {
         try {
-            OutputStream ou =  new FileOutputStream(file);
+            OutputStream ou = new FileOutputStream(file);
             byte[] buf = new byte[1024];
             int len;
-            while ((len=in.read(buf))>0){
-                ou.write(buf,0,len);
+            while ((len = in.read(buf)) > 0) {
+                ou.write(buf, 0, len);
             }
             ou.close();
             in.close();
@@ -120,35 +147,59 @@ public class GraphService extends IntentService {
         }
 
     }
+
     /**
      * Handle action Baz in the provided background thread with the provided
      * parameters.
      */
     private void handleActionBaz1(String param1, String param2) {
-        Log.d("Max","Thread service name : " + Thread.currentThread().getName());
+        Log.d("Max", "Thread service name : " + Thread.currentThread().getName());
         try {
-            URL url = new URL (api+"/"+param2);
-            Log.e("coq",url.toString());
+            URL url = new URL(api + "/" + param2);
+            Log.e("coq", url.toString());
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setRequestProperty("X-Auth-Token",getApplicationContext().getSharedPreferences("MyPref",1).getString("Token",""));
+            connection.setRequestProperty("X-Auth-Token", getApplicationContext().getSharedPreferences("MyPref", 1).getString("Token", ""));
             connection.connect();
-            if (HttpsURLConnection.HTTP_OK == connection.getResponseCode()){
+            if (HttpsURLConnection.HTTP_OK == connection.getResponseCode()) {
                 copyInputStreamToFile(connection.getInputStream(), new File(getCacheDir(), "/sensors_data1.json"));
-                Log.d("Max",param1+param2+" DL");
+                Log.d("Max", param1 + param2 + " DL");
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        switch(param1){
-            case "1" : LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_DATA1)); break;
-            case "2" : LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragMonth.UPDATES_DATA2)); break;
-            case "3" : LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_DATA3)); break;
-
+        switch (param1) {
+            case "1":
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_DATA1));
+                break;
+            case "2":
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragMonth.UPDATES_DATA2));
+                break;
+            case "3":
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_DATA3));
+                break;
         }
 
     }
 
+    private void handleActionBaz2(String param1, String param2) {
+        Log.d("Max", "Thread service name : " + Thread.currentThread().getName());
+        try {
+            URL url = new URL(api + "/" + param1 + param2);
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("X-Auth-Token", getApplicationContext().getSharedPreferences("MyPref", 1).getString("Token", ""));
+            connection.connect();
+            Log.d("Max", api + "/" + param1 + param2 + String.valueOf(connection.getResponseCode()));
+            if (HttpsURLConnection.HTTP_OK == connection.getResponseCode()) {
+                copyInputStreamToFile(connection.getInputStream(), new File(getCacheDir(), "/images.json"));
+                Log.d("Max", "Image DL");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Medias.UPDATES_IMAGES));
+    }
 }
 
 
