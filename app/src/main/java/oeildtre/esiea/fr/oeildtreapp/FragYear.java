@@ -45,8 +45,12 @@ public class FragYear extends Fragment {
     public JSONArray getFromFile(String param1,String param2) {
         try {
             InputStream is = new FileInputStream(getActivity().getCacheDir() + "/"+param1+param2+".json");
-            byte[] buffer = new byte[is.available()];
-            return new JSONArray(new String(buffer, "UTF-8"));
+            int size=is.available();
+            byte[] buffer=new byte[size];
+            is.read(buffer);
+            is.close();
+            String text=new String(buffer);
+            return new JSONArray(text);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -87,9 +91,9 @@ public class FragYear extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
-                                link2 = "/" + list_obj.getJSONObject(i).getString("id");
-                                GraphService.startActionBaz3(getContext(), "sensors", link);
+                                link = "sensors/" + list_obj.getJSONObject(i).getString("id") + web;
+                                link2 = "sensors/" + list_obj.getJSONObject(i).getString("id");
+                                GraphService.startActionBaz1(getContext(), "3", link);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -111,9 +115,9 @@ public class FragYear extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
-                                link2 = "/" + list_obj.getJSONObject(i).getString("id");
-                                GraphService.startActionBaz3(getContext(), "sensors", link);
+                                link = "sensors/" + list_obj.getJSONObject(i).getString("id") + web;
+                                link2 = "sensors/" + list_obj.getJSONObject(i).getString("id");
+                                GraphService.startActionBaz1(getContext(), "3", link);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -134,9 +138,9 @@ public class FragYear extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
-                                link2 = "/" + list_obj.getJSONObject(i).getString("id");
-                                GraphService.startActionBaz3(getContext(), "sensors", link);
+                                link = "sensors/" + list_obj.getJSONObject(i).getString("id") + web;
+                                link2 = "sensors/" + list_obj.getJSONObject(i).getString("id");
+                                GraphService.startActionBaz1(getContext(), "3", link);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -157,9 +161,9 @@ public class FragYear extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
-                                link2 = "/" + list_obj.getJSONObject(i).getString("id");
-                                GraphService.startActionBaz3(getContext(), "sensors", link);
+                                link = "sensors/" + list_obj.getJSONObject(i).getString("id") + web;
+                                link2 = "sensors/" + list_obj.getJSONObject(i).getString("id");
+                                GraphService.startActionBaz1(getContext(), "3", link);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -187,7 +191,7 @@ public class FragYear extends Fragment {
                                                   int monthOfYear, int dayOfMonth) {
                                 text.setText(year);
                                 web = "/dailydata/year?year="+year;
-                                GraphService.startActionBaz3(getContext(), "sensors", link2+web);
+                                GraphService.startActionBaz1(getContext(), "3", link2+web);
                             }
                         }, mYear, mMonth, mDay);
                 dpd.show();
@@ -220,7 +224,7 @@ public class FragYear extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
                 String graph="";
-                JSONArray list_data = getFromFile("sensors", "_data3");
+                JSONArray list_data = getFromFile("sensors", "_data1");
                 Log.d("FY.UData", list_data.toString());
                 for(int i = 0; i< list_data.length(); i++){
                     try {

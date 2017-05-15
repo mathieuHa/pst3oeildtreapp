@@ -46,8 +46,12 @@ public class FragDay extends Fragment {
         try {
             InputStream is = new FileInputStream(getContext().getCacheDir()+"/" + param1 + param2 + ".json");
             Log.d("FD.USensor", getActivity().getCacheDir() + "/" + param1 + param2 + ".json");
-            byte[] buffer = new byte[is.available()];
-            return new JSONArray(new String(buffer, "UTF-8"));
+            int size=is.available();
+            byte[] buffer=new byte[size];
+            is.read(buffer);
+            is.close();
+            String text=new String(buffer);
+            return new JSONArray(text);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -66,12 +70,11 @@ public class FragDay extends Fragment {
                              Bundle savedInstanceState) {
 
         final View day = inflater.inflate(R.layout.graphe_day, container, false);
-        if (getActivity() != null) {
-            GraphService.startActionFoo(getContext(), "sensors", "day");
-            IntentFilter inF = new IntentFilter(UPDATES_SENSORS1);
-            us = new UpdateSensor();
-            LocalBroadcastManager.getInstance(getContext()).registerReceiver(us, inF);
-        }
+        GraphService.startActionFoo(getContext(), "sensors", "day");
+        IntentFilter inF = new IntentFilter(UPDATES_SENSORS1);
+        us = new UpdateSensor();
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(us, inF);
+
 
         final Button btn = (Button) day.findViewById(R.id.bdate);
         final TextView text = (TextView) day.findViewById(R.id.date);
@@ -114,9 +117,9 @@ public class FragDay extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
-                                link2 = "/" + list_obj.getJSONObject(i).getString("id");
-                                GraphService.startActionBaz1(getContext(), "sensors", link);
+                                link = "sensors/" + list_obj.getJSONObject(i).getString("id") + web;
+                                link2 = "sensors/" + list_obj.getJSONObject(i).getString("id");
+                                GraphService.startActionBaz1(getContext(), "1", link);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -137,9 +140,9 @@ public class FragDay extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
-                                link2 = "/" + list_obj.getJSONObject(i).getString("id");
-                                GraphService.startActionBaz1(getContext(), "sensors", link);
+                                link = "sensors/" + list_obj.getJSONObject(i).getString("id") + web;
+                                link2 = "sensors/" + list_obj.getJSONObject(i).getString("id");
+                                GraphService.startActionBaz1(getContext(), "1", link);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -160,9 +163,9 @@ public class FragDay extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
-                                link2 = "/" + list_obj.getJSONObject(i).getString("id");
-                                GraphService.startActionBaz1(getContext(), "sensors", link);
+                                link = "sensors/" + list_obj.getJSONObject(i).getString("id") + web;
+                                link2 = "sensors/" + list_obj.getJSONObject(i).getString("id");
+                                GraphService.startActionBaz1(getContext(), "1", link);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -192,7 +195,7 @@ public class FragDay extends Fragment {
                                 text.setText(dayOfMonth + "/"
                                         + (monthOfYear + 1) + "/" + year);
                                 web = "/data/day?day="+dayOfMonth+"&month="+(monthOfYear+1)+"&year="+year;
-                                GraphService.startActionBaz1(getContext(), "sensors", link2+web);
+                                GraphService.startActionBaz1(getContext(), "1", link2+web);
                             }
                         }, mYear, mMonth, mDay);
                 dpd.show();

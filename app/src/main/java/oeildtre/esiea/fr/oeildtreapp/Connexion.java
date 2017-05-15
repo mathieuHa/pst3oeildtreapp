@@ -46,6 +46,8 @@ public class Connexion extends Fragment {
         Button ins = (Button) conn.findViewById(R.id.ins);
         id = (EditText) conn.findViewById(R.id.id);
         mdp = (EditText) conn.findViewById(R.id.mdp);
+        id.setText(getContext().getSharedPreferences("MyPref",1).getString("Sid",""));
+        mdp.setText(getContext().getSharedPreferences("MyPref",1).getString("Smdp",""));
 
         con.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,9 +115,9 @@ public class Connexion extends Fragment {
 
             try {
                 //Init JSON and url de destination
-                URL url = new URL("http://oeildtreapi.hanotaux.fr/api/auth-tokens");
+                URL url = new URL("https://oeildtapi.hanotaux.fr/api/auth-tokens");
                 //Init la connexion à l'API
-                HttpURLConnection connec = (HttpURLConnection) url.openConnection();
+                HttpsURLConnection connec = (HttpsURLConnection) url.openConnection();
                 connec.setReadTimeout(15000);
                 connec.setConnectTimeout(15000);
                 connec.setRequestMethod("POST");
@@ -154,6 +156,8 @@ public class Connexion extends Fragment {
                         Properties = getContext().getSharedPreferences("MyPref", 1);
                         editor = Properties.edit();
                         editor.putString("Token", resultat.getString("value"));
+                        editor.putString("Sid", sid);
+                        editor.putString("Smdp", smdp);
                         editor.commit();
                     }
                     return sb.toString();
@@ -193,8 +197,7 @@ public class Connexion extends Fragment {
         protected void onPreExecute() {
             try {
                 postDataParams = new JSONObject();
-                postDataParams.put("prenom", "mathieu");
-                postDataParams.put("nom", "hanotaux");
+                postDataParams.put("login", "mathieu");
                 postDataParams.put("mail", sid);
                 postDataParams.put("plainpassword", smdp);
                 Log.e("params", postDataParams.toString());
@@ -208,7 +211,7 @@ public class Connexion extends Fragment {
 
             try {
                 //Init JSON and url de destination
-                URL url = new URL("http://oeildtreapi.hanotaux.fr/api/users");
+                URL url = new URL("https://oeildtapi.hanotaux.fr/api/users");
                 //Init la connexion à l'API
                 HttpURLConnection connec = (HttpURLConnection) url.openConnection();
                 connec.setReadTimeout(15000);
