@@ -10,6 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -35,19 +38,85 @@ public class Connexion extends Fragment {
     private SharedPreferences Properties;
     private SharedPreferences.Editor editor;
     private GraphService gs = new GraphService();
-    private EditText id,mdp;
-    private String sid,smdp,result;
+    private EditText id,mdp,name;
+    private String sid,smdp,sname,result;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View conn = inflater.inflate(R.layout.connexion, container, false);
+        final LinearLayout first = (LinearLayout) conn.findViewById(R.id.first);
+        final LinearLayout second = (LinearLayout) conn.findViewById(R.id.second);
 
-        Button con = (Button) conn.findViewById(R.id.con);
-        Button ins = (Button) conn.findViewById(R.id.ins);
+        final Button con = (Button) conn.findViewById(R.id.con);
+        final Button ins = (Button) conn.findViewById(R.id.ins);
+        final Button in = (Button) conn.findViewById(R.id.in);
+        final Button up = (Button) conn.findViewById(R.id.up);
+        final ImageButton back = (ImageButton) conn.findViewById(R.id.back);
+        name = (EditText) conn.findViewById(R.id.name);
         id = (EditText) conn.findViewById(R.id.id);
         mdp = (EditText) conn.findViewById(R.id.mdp);
-        id.setText(getContext().getSharedPreferences("MyPref",1).getString("Sid",""));
-        mdp.setText(getContext().getSharedPreferences("MyPref",1).getString("Smdp",""));
+
+        second.setVisibility(View.INVISIBLE);
+        second.setEnabled(false);
+        back.setVisibility(View.INVISIBLE);
+        back.setEnabled(false);
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                second.setVisibility(View.INVISIBLE);
+                second.setEnabled(false);
+                first.setEnabled(true);
+                first.setVisibility(View.VISIBLE);
+                back.setVisibility(View.INVISIBLE);
+                back.setEnabled(false);
+            }
+        });
+        in.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                first.setEnabled(false);
+                first.setVisibility(View.INVISIBLE);
+                second.setVisibility(View.VISIBLE);
+                second.setEnabled(true);
+                second.bringToFront();
+
+                name.setVisibility(View.INVISIBLE);
+                name.setEnabled(false);
+
+                con.bringToFront();
+                con.setEnabled(true);
+                ins.setEnabled(false);
+                back.setVisibility(View.VISIBLE);
+                back.setEnabled(true);
+
+                id.setText(getContext().getSharedPreferences("MyPref",1).getString("Smail",""));
+                mdp.setText(getContext().getSharedPreferences("MyPref",1).getString("Smdp",""));
+            }
+        });
+        up.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                first.setVisibility(View.INVISIBLE);
+                first.setEnabled(false);
+                second.setVisibility(View.VISIBLE);
+                second.setEnabled(true);
+                second.bringToFront();
+
+                name.setVisibility(View.VISIBLE);
+                name.setEnabled(true);
+
+                ins.bringToFront();
+                ins.setEnabled(true);
+                con.setEnabled(false);
+                back.setVisibility(View.VISIBLE);
+                back.setEnabled(true);
+
+                id.setText("");
+                mdp.setText("");
+            }
+        });
+
 
         con.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,6 +130,7 @@ public class Connexion extends Fragment {
         ins.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sname = name.getText().toString();
                 sid = id.getText().toString();
                 smdp = mdp.getText().toString();
                 new SendSignUpRequest().execute();
@@ -156,8 +226,11 @@ public class Connexion extends Fragment {
                         Properties = getContext().getSharedPreferences("MyPref", 1);
                         editor = Properties.edit();
                         editor.putString("Token", resultat.getString("value"));
-                        editor.putString("Sid", sid);
+                        editor.putString("Smail", sid);
                         editor.putString("Smdp", smdp);
+                        editor.putString("user", resultat.getJSONObject("user").getString("id"));
+                        editor.putString("Sname", resultat.getJSONObject("user").getString("login"));
+
                         editor.commit();
                     }
                     return sb.toString();
@@ -197,7 +270,7 @@ public class Connexion extends Fragment {
         protected void onPreExecute() {
             try {
                 postDataParams = new JSONObject();
-                postDataParams.put("login", "mathieu");
+                postDataParams.put("login", sname);
                 postDataParams.put("mail", sid);
                 postDataParams.put("plainpassword", smdp);
                 Log.e("params", postDataParams.toString());

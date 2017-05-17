@@ -15,14 +15,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -57,7 +54,7 @@ public class Medias extends Fragment {
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         mRecyclerView.bringToFront();
-        GraphService.startActionBaz2(getContext(),"media/images","");
+        GraphService.startActionBaz2(getContext(),"media/","images");
         IntentFilter inF = new IntentFilter(UPDATES_IMAGES);
         ui = new UpdateImages();
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(ui, inF);

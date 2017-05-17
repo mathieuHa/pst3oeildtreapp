@@ -75,7 +75,10 @@ public class FragMonth extends Fragment {
         us = new UpdateSensor();
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(us, inF);
 
-
+        final Calendar c = Calendar.getInstance();
+        int mYear = c.get(Calendar.YEAR);
+        int mMonth = c.get(Calendar.MONTH);
+        web = "/daily/data/month?month="+(mMonth+1)+"&year="+mYear;
 
         final Button btn = (Button) month.findViewById(R.id.bdate);
         final TextView text = (TextView) month.findViewById(R.id.date);
@@ -193,7 +196,7 @@ public class FragMonth extends Fragment {
                             public void onDateSet(DatePicker view, int year,
                                                   int monthOfYear, int dayOfMonth) {
                                 text.setText((monthOfYear + 1) + "/" + year);
-                                web = "/dailydata/month?month="+monthOfYear+"&year="+year;
+                                web = "/dailydata/month?month="+(monthOfYear+1)+"&year="+year;
                                 GraphService.startActionBaz1(getContext(), "2", link2+web);
                             }
                         }, mYear, mMonth, mDay);
@@ -225,7 +228,7 @@ public class FragMonth extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
                 String graph="", graphMax="", graphMin="";
-                JSONArray list_data = getFromFile("sensors", "_data1");
+                JSONArray list_data = getFromFile("sensors", "_data2");
                 Log.d("FM.UData", list_data.toString());
                 for(int i = 0; i< list_data.length(); i++){
                     try {
@@ -247,4 +250,5 @@ public class FragMonth extends Fragment {
             }
         }
     }
+
 }

@@ -2,6 +2,7 @@ package oeildtre.esiea.fr.oeildtreapp;
 
 
         import android.content.SharedPreferences;
+        import android.os.AsyncTask;
         import android.os.Bundle;
         import android.support.v4.app.Fragment;
         import android.util.Log;
@@ -12,6 +13,23 @@ package oeildtre.esiea.fr.oeildtreapp;
         import android.webkit.WebView;
         import android.widget.ImageButton;
         import android.widget.LinearLayout;
+        import android.widget.Toast;
+
+        import org.json.JSONException;
+        import org.json.JSONObject;
+
+        import java.io.BufferedReader;
+        import java.io.BufferedWriter;
+        import java.io.IOException;
+        import java.io.InputStreamReader;
+        import java.io.OutputStream;
+        import java.io.OutputStreamWriter;
+        import java.net.HttpURLConnection;
+        import java.net.MalformedURLException;
+        import java.net.ProtocolException;
+        import java.net.URL;
+
+        import javax.net.ssl.HttpsURLConnection;
 
 public class Camera extends Fragment {
 
@@ -41,7 +59,13 @@ public class Camera extends Fragment {
 
         //Le TOKEN !!!
         //Log.e("token", getContext().getSharedPreferences("MyPref",1).getString("Token",""));
-
+        camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GraphService.startActionBaz2(getContext(), "media/shot?id=",getContext().getSharedPreferences("MyPref",1).getString("user",""));
+                Toast.makeText(getContext(), "Picture Taken", Toast.LENGTH_LONG).show();
+            }
+        });
 
 
         webView.setOnTouchListener(new View.OnTouchListener() {

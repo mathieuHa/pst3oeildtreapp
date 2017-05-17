@@ -6,6 +6,7 @@ import android.content.Context;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -69,6 +70,7 @@ public class GraphService extends IntentService {
         context.startService(intent);
     }
 
+    public String getApi() { return api; }
     public String getStream() {
         return stream;
     }
@@ -162,7 +164,7 @@ public class GraphService extends IntentService {
             connection.setRequestProperty("X-Auth-Token", getApplicationContext().getSharedPreferences("MyPref", 1).getString("Token", ""));
             connection.connect();
             if (HttpsURLConnection.HTTP_OK == connection.getResponseCode()) {
-                copyInputStreamToFile(connection.getInputStream(), new File(getCacheDir(), "/sensors_data1.json"));
+                copyInputStreamToFile(connection.getInputStream(), new File(getCacheDir(), "/sensors_data"+param1+".json"));
                 Log.d("Max", param1 + param2 + " DL");
             }
         } catch (IOException e) {
@@ -190,15 +192,16 @@ public class GraphService extends IntentService {
             connection.setRequestMethod("GET");
             connection.setRequestProperty("X-Auth-Token", getApplicationContext().getSharedPreferences("MyPref", 1).getString("Token", ""));
             connection.connect();
-            Log.d("Max", api + "/" + param1 + param2 + String.valueOf(connection.getResponseCode()));
-            if (HttpsURLConnection.HTTP_OK == connection.getResponseCode()) {
-                copyInputStreamToFile(connection.getInputStream(), new File(getCacheDir(), "/images.json"));
-                Log.d("Max", "Image DL");
+            Log.d("Max", api + "/" + param1 + param2);
+            if (HttpsURLConnection.HTTP_OK == connection.getResponseCode() && !param2.equals("shot")) {
+                copyInputStreamToFile(connection.getInputStream(), new File(getCacheDir(), "/" + param2 + ".json"));
+                Log.d("Max", param2 + " DL");
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Medias.UPDATES_IMAGES));
             }
+            if(HttpsURLConnection.HTTP_OK == connection.getResponseCode() && param2.equals("shot"))Log.d("Photo", "Taken");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Medias.UPDATES_IMAGES));
     }
 }
 

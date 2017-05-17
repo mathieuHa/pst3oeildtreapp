@@ -67,7 +67,11 @@ public class FragDay extends Fragment {
         IntentFilter inF = new IntentFilter(UPDATES_SENSORS1);
         us = new UpdateSensor();
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(us, inF);
-
+        final Calendar c = Calendar.getInstance();
+        int mYear = c.get(Calendar.YEAR);
+        int mMonth = c.get(Calendar.MONTH);
+        int mDay = c.get(Calendar.DAY_OF_MONTH);
+        web = "/data/day?day="+mDay+"&month="+(mMonth+1)+"&year="+mYear;
 
         final Button btn = (Button) day.findViewById(R.id.bdate);
         final TextView text = (TextView) day.findViewById(R.id.date);
@@ -86,9 +90,9 @@ public class FragDay extends Fragment {
                     for (int i = 0; i < list_obj.length(); i++) {
                         try {
                             if (list_obj.getJSONObject(i).getString("name").equals(sensor)) {
-                                link = "/" + list_obj.getJSONObject(i).getString("id") + web;
-                                link2 = "/" + list_obj.getJSONObject(i).getString("id");
-                                GraphService.startActionBaz1(getContext(), "sensors", link);
+                                link = "sensors/" + list_obj.getJSONObject(i).getString("id") + web;
+                                link2 = "sensors/" + list_obj.getJSONObject(i).getString("id");
+                                GraphService.startActionBaz1(getContext(), "1", link);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

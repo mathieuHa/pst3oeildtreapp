@@ -80,6 +80,11 @@ public class FragYear extends Fragment {
         final CheckBox humi = (CheckBox) year.findViewById(R.id.humi);
         final CheckBox son  = (CheckBox) year.findViewById(R.id.son);
         final CheckBox lum  = (CheckBox) year.findViewById(R.id.lum);
+
+        final Calendar c = Calendar.getInstance();
+        int mYear = c.get(Calendar.YEAR);
+        web = "/dailydata/year/year?year="+mYear;
+
         temp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,7 +103,6 @@ public class FragYear extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
                     }
                 }
             }
@@ -189,8 +193,8 @@ public class FragYear extends Fragment {
                             @Override
                             public void onDateSet(DatePicker view, int year,
                                                   int monthOfYear, int dayOfMonth) {
-                                text.setText(year);
-                                web = "/dailydata/year?year="+year;
+                                text.setText(String.valueOf(year));
+                                web = "/dailydata/year?&year="+year;
                                 GraphService.startActionBaz1(getContext(), "3", link2+web);
                             }
                         }, mYear, mMonth, mDay);
@@ -224,7 +228,7 @@ public class FragYear extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
                 String graph="";
-                JSONArray list_data = getFromFile("sensors", "_data1");
+                JSONArray list_data = getFromFile("sensors", "_data3");
                 Log.d("FY.UData", list_data.toString());
                 for(int i = 0; i< list_data.length(); i++){
                     try {
