@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class Medias extends Fragment {
     public static final String UPDATES_IMAGES="UPDATES_IMAGES";
@@ -51,10 +54,11 @@ public class Medias extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.medias, container, false);
         rootView.setTag(TAG);
-
+        final RadioButton my = (RadioButton) rootView.findViewById(R.id.my);
+        final RadioButton all = (RadioButton) rootView.findViewById(R.id.all);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         mRecyclerView.bringToFront();
-        GraphService.startActionBaz2(getContext(),"media/","images");
+        GraphService.startActionBaz2(getContext(),"media/image/",getContext().getSharedPreferences("MyPref",1).getString("UserId",""));
         IntentFilter inF = new IntentFilter(UPDATES_IMAGES);
         ui = new UpdateImages();
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(ui, inF);
@@ -76,7 +80,20 @@ public class Medias extends Fragment {
         // Set CustomAdapter as the adapter for RecyclerView.
         //mRecyclerView.setAdapter(mAdapter);
         //setRecyclerViewLayoutManager(LayoutManagerType.LINEAR_LAYOUT_MANAGER);
-
+        my.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                all.setChecked(false);
+                GraphService.startActionBaz2(getContext(),"media/image/",getContext().getSharedPreferences("MyPref",MODE_PRIVATE).getString("UserId",""));
+            }
+        });
+        all.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                my.setChecked(false);
+                GraphService.startActionBaz2(getContext(),"media/","images");
+            }
+        });
         return rootView;
     }
 
@@ -94,19 +111,19 @@ public class Medias extends Fragment {
                     .findFirstCompletelyVisibleItemPosition();
         }
 
-        switch (layoutManagerType) {
+        /*switch (layoutManagerType) {
             case GRID_LAYOUT_MANAGER:
                 mLayoutManager = new GridLayoutManager(getActivity(), SPAN_COUNT);
                 mCurrentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER;
                 break;
-            case LINEAR_LAYOUT_MANAGER:
+            case LINEAR_LAYOUT_MANAGER:*/
                 mLayoutManager = new LinearLayoutManager(getActivity());
                 mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
-                break;
+                /*break;
             default:
                 mLayoutManager = new LinearLayoutManager(getActivity());
                 mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
-        }
+        }*/
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.scrollToPosition(scrollPosition);
@@ -114,7 +131,6 @@ public class Medias extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save currently selected layout manager.
         savedInstanceState.putSerializable(KEY_LAYOUT_MANAGER, mCurrentLayoutManagerType);
         super.onSaveInstanceState(savedInstanceState);
     }

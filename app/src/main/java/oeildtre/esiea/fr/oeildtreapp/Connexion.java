@@ -33,6 +33,8 @@ import java.util.Iterator;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import static android.content.Context.MODE_PRIVATE;
+
 
 public class Connexion extends Fragment {
     private SharedPreferences Properties;
@@ -89,9 +91,8 @@ public class Connexion extends Fragment {
                 ins.setEnabled(false);
                 back.setVisibility(View.VISIBLE);
                 back.setEnabled(true);
-
-                id.setText(getContext().getSharedPreferences("MyPref",1).getString("Smail",""));
-                mdp.setText(getContext().getSharedPreferences("MyPref",1).getString("Smdp",""));
+                id.setText(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Smail", " "));
+                mdp.setText(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Smdp", " "));
             }
         });
         up.setOnClickListener(new View.OnClickListener() {
@@ -228,33 +229,20 @@ public class Connexion extends Fragment {
                         editor.putString("Token", resultat.getString("value"));
                         editor.putString("Smail", sid);
                         editor.putString("Smdp", smdp);
-                        editor.putString("user", resultat.getJSONObject("user").getString("id"));
+                        editor.putString("UserId", resultat.getJSONObject("user").getString("id"));
                         editor.putString("Sname", resultat.getJSONObject("user").getString("login"));
 
                         editor.commit();
                     }
-                    return sb.toString();
+                    return "You're connected as " + getContext().getSharedPreferences("MyPref", 1).getString("Sname", "");
                 }
                 else {
-                    return "false : " + responseCode;
+                    return connec.getResponseMessage();
                 }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                Log.e("1","");
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Log.e("2","");
-            } catch (ProtocolException e) {
-                e.printStackTrace();
-                Log.e("3","");
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("4","");
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.e("5","");
             }
-            return "true";
+            return "Error";
         }
 
         @Override
@@ -317,29 +305,16 @@ public class Connexion extends Fragment {
                     result = sb.toString();
                     Log.e("token",result);
                     in.close();
-                    return sb.toString();
+                    return "Account created";
 
                 }
                 else {
-                    return "false : " + responseCode;
+                    return connec.getResponseMessage();
                 }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                Log.e("1","");
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Log.e("2","");
-            } catch (ProtocolException e) {
-                e.printStackTrace();
-                Log.e("3","");
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("4","");
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.e("5","");
             }
-            return "true";
+            return "Error";
         }
 
         @Override

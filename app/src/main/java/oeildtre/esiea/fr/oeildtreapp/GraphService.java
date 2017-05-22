@@ -193,12 +193,11 @@ public class GraphService extends IntentService {
             connection.setRequestProperty("X-Auth-Token", getApplicationContext().getSharedPreferences("MyPref", 1).getString("Token", ""));
             connection.connect();
             Log.d("Max", api + "/" + param1 + param2);
-            if (HttpsURLConnection.HTTP_OK == connection.getResponseCode() && !param2.equals("shot")) {
+            if (HttpsURLConnection.HTTP_OK == connection.getResponseCode()) {
                 copyInputStreamToFile(connection.getInputStream(), new File(getCacheDir(), "/" + param2 + ".json"));
                 Log.d("Max", param2 + " DL");
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Medias.UPDATES_IMAGES));
             }
-            if(HttpsURLConnection.HTTP_OK == connection.getResponseCode() && param2.equals("shot"))Log.d("Photo", "Taken");
         } catch (IOException e) {
             e.printStackTrace();
         }

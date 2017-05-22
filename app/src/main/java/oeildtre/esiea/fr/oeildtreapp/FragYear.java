@@ -74,6 +74,10 @@ public class FragYear extends Fragment {
         us = new UpdateSensor();
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(us,inF);
 
+        IntentFilter inFi = new IntentFilter(UPDATES_DATA3);
+        ud = new UpdateData();
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(ud, inFi);
+
         final Button btn = (Button) year.findViewById(R.id.bdate);
         final TextView text = (TextView) year.findViewById(R.id.date);
         final CheckBox temp = (CheckBox) year.findViewById(R.id.temp);
@@ -176,9 +180,7 @@ public class FragYear extends Fragment {
                 }
             }
         });
-        IntentFilter inFi = new IntentFilter(UPDATES_DATA3);
-        ud = new UpdateData();
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new UpdateData(), inFi);
+
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

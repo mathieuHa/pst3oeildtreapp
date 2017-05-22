@@ -39,7 +39,6 @@ public class FragMonth extends Fragment {
     private String web = "/dailydata/month?month=3&year=2017";
     private boolean fini = false;
 
-
     private UpdateSensor us;
     private UpdateData ud;
 
@@ -74,6 +73,10 @@ public class FragMonth extends Fragment {
         IntentFilter inF = new IntentFilter(UPDATES_SENSOR2);
         us = new UpdateSensor();
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(us, inF);
+
+        IntentFilter inFi = new IntentFilter(UPDATES_DATA2);
+        ud = new UpdateData();
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(ud, inFi);
 
         final Calendar c = Calendar.getInstance();
         int mYear = c.get(Calendar.YEAR);
@@ -178,9 +181,6 @@ public class FragMonth extends Fragment {
                 }
             }
         });
-        IntentFilter inFi = new IntentFilter(UPDATES_DATA2);
-        ud = new UpdateData();
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(ud, inFi);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

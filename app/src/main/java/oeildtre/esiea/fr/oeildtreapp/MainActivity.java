@@ -1,6 +1,8 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
 
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -12,6 +14,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Iterator;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,16 +41,21 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private CharSequence mTitle;
+    private String result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        new SendSignInRequest().execute();
         mTitle = getTitle();
         mNavigationDrawerItemTitles = getResources().getStringArray(R.array.navigation_drawer_items_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        SharedPreferences settings = getSharedPreferences("MyPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean("coco",true);
+        editor.commit();
 
         setupToolbar();
 
@@ -120,6 +145,31 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToggle.syncState();
     }
 
+    public String getPostDataString(JSONObject params) throws Exception {
+
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+
+        Iterator<String> itr = params.keys();
+
+        while(itr.hasNext()){
+
+            String key= itr.next();
+            Object value = params.get(key);
+
+            if (first)
+                first = false;
+            else
+                result.append("&");
+
+            result.append(URLEncoder.encode(key, "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(value.toString(), "UTF-8"));
+
+        }
+        return result.toString();
+    }
+
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
         @Override
@@ -127,5 +177,86 @@ public class MainActivity extends AppCompatActivity {
             selectItem(position);
         }
 
+    }
+
+    public class SendSignInRequest extends AsyncTask<String, Void, String> {
+        JSONObject postDataParams;
+
+        @Override
+        protected void onPreExecute() {
+            try {
+                postDataParams = new JSONObject();
+                postDataParams.put("login", getSharedPreferences("MyPref", MODE_PRIVATE).getString("Smail", " "));
+                postDataParams.put("password", getSharedPreferences("MyPref", MODE_PRIVATE).getString("Smdp", " "));
+                Log.e("params", postDataParams.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        protected String doInBackground(String... params) {
+
+            try {
+                //Init JSON and url de destination
+                URL url = new URL("https://oeildtapi.hanotaux.fr/api/auth-tokens");
+                //Init la connexion à l'API
+                HttpsURLConnection connec = (HttpsURLConnection) url.openConnection();
+                connec.setReadTimeout(15000);
+                connec.setConnectTimeout(15000);
+                connec.setRequestMethod("POST");
+                connec.setDoInput(true);
+                connec.setDoOutput(true);
+                //On lache la sauce
+                OutputStream os = connec.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(getPostDataString(postDataParams));
+
+                writer.flush();
+                writer.close();
+                os.close();
+                int responseCode = connec.getResponseCode();
+
+                if (responseCode == 201) {
+                    Log.e("token3", "Jusque la ca va !");
+                    BufferedReader in = new BufferedReader(
+                            new InputStreamReader(
+                                    connec.getInputStream()));
+                    StringBuffer sb = new StringBuffer("");
+                    String line = "";
+
+                    while ((line = in.readLine()) != null) {
+
+                        sb.append(line);
+                        break;
+                    }
+                    result = sb.toString();
+                    Log.e("token", result);
+                    in.close();
+                    JSONObject resultat = new JSONObject(result);
+                    if (resultat != null) {
+
+//Initialise tes préférences
+                        SharedPreferences Properties = getSharedPreferences("MyPref", 1);
+                        SharedPreferences.Editor editor = Properties.edit();
+                        editor.putString("Token", resultat.getString("value"));
+                        editor.putString("UserId", resultat.getJSONObject("user").getString("id"));
+                        editor.putString("Sname", resultat.getJSONObject("user").getString("login"));
+
+                        editor.commit();
+                    }
+                    return "You're connected as " + getSharedPreferences("MyPref", 1).getString("Sname", "");
+                } else {
+                    return connec.getResponseMessage();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return "Error";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
+        }
     }
 }

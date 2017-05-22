@@ -31,6 +31,8 @@ package oeildtre.esiea.fr.oeildtreapp;
 
         import javax.net.ssl.HttpsURLConnection;
 
+        import static android.content.Context.MODE_PRIVATE;
+
 public class Camera extends Fragment {
 
     WebView webView;
@@ -62,7 +64,7 @@ public class Camera extends Fragment {
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GraphService.startActionBaz2(getContext(), "media/shot?id=",getContext().getSharedPreferences("MyPref",1).getString("user",""));
+                GraphService.startActionBaz2(getContext(), "media/shot?id=",getContext().getSharedPreferences("MyPref",MODE_PRIVATE).getString("UserId",""));
                 Toast.makeText(getContext(), "Picture Taken", Toast.LENGTH_LONG).show();
             }
         });

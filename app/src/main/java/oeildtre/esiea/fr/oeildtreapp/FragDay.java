@@ -67,6 +67,11 @@ public class FragDay extends Fragment {
         IntentFilter inF = new IntentFilter(UPDATES_SENSORS1);
         us = new UpdateSensor();
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(us, inF);
+
+        IntentFilter inFi = new IntentFilter(UPDATES_DATA1);
+        ud = new UpdateData();
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(ud, inFi);
+
         final Calendar c = Calendar.getInstance();
         int mYear = c.get(Calendar.YEAR);
         int mMonth = c.get(Calendar.MONTH);
@@ -171,9 +176,6 @@ public class FragDay extends Fragment {
                 }
             }
         });
-        IntentFilter inFi = new IntentFilter(UPDATES_DATA1);
-        ud = new UpdateData();
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(ud, inFi);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
