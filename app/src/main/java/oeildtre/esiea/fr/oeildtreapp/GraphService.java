@@ -108,7 +108,7 @@ public class GraphService extends IntentService {
             URL url = new URL(api + "/" + param1);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setRequestProperty("X-Auth-Token", getApplicationContext().getSharedPreferences("MyPref", 1).getString("Token", "xx"));
+            connection.setRequestProperty("X-Auth-Token", getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Token", "xx"));
             connection.connect();
             if (HttpsURLConnection.HTTP_OK == connection.getResponseCode()) {
                 Log.i("Code et Reponse", connection.getResponseMessage() + " " + connection.getResponseCode());
@@ -161,7 +161,7 @@ public class GraphService extends IntentService {
             Log.e("coq", url.toString());
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setRequestProperty("X-Auth-Token", getApplicationContext().getSharedPreferences("MyPref", 1).getString("Token", ""));
+            connection.setRequestProperty("X-Auth-Token", getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Token", ""));
             connection.connect();
             if (HttpsURLConnection.HTTP_OK == connection.getResponseCode()) {
                 copyInputStreamToFile(connection.getInputStream(), new File(getCacheDir(), "/sensors_data"+param1+".json"));
@@ -190,7 +190,7 @@ public class GraphService extends IntentService {
             URL url = new URL(api + "/" + param1 + param2);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setRequestProperty("X-Auth-Token", getApplicationContext().getSharedPreferences("MyPref", 1).getString("Token", ""));
+            connection.setRequestProperty("X-Auth-Token", getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Token", ""));
             connection.connect();
             Log.d("Max", api + "/" + param1 + param2);
             if (HttpsURLConnection.HTTP_OK == connection.getResponseCode()) {

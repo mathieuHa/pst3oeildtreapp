@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new FragMonth();
                 break;
             case 3:
-                fragment = new FragYear();
+                fragment = new Tchat();
                 break;
             case 4:
                 fragment = new Camera();
@@ -237,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
                     if (resultat != null) {
 
 //Initialise tes préférences
-                        SharedPreferences Properties = getSharedPreferences("MyPref", 1);
+                        SharedPreferences Properties = getSharedPreferences("MyPref", MODE_PRIVATE);
                         SharedPreferences.Editor editor = Properties.edit();
                         editor.putString("Token", resultat.getString("value"));
                         editor.putString("UserId", resultat.getJSONObject("user").getString("id"));
@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
 
                         editor.commit();
                     }
-                    return "You're connected as " + getSharedPreferences("MyPref", 1).getString("Sname", "");
+                    return "You're connected as " + getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", "");
                 } else {
                     return connec.getResponseMessage();
                 }

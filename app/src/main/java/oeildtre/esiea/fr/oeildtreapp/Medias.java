@@ -43,7 +43,7 @@ public class Medias extends Fragment {
     private GraphService gs = new GraphService();
     private UpdateImages ui;
     private JSONArray list_obj;
-
+    private RadioButton my,all;
     @Override
     public void onDestroy() {
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(ui);
@@ -54,11 +54,11 @@ public class Medias extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.medias, container, false);
         rootView.setTag(TAG);
-        final RadioButton my = (RadioButton) rootView.findViewById(R.id.my);
-        final RadioButton all = (RadioButton) rootView.findViewById(R.id.all);
+        my = (RadioButton) rootView.findViewById(R.id.my);
+        all = (RadioButton) rootView.findViewById(R.id.all);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         mRecyclerView.bringToFront();
-        GraphService.startActionBaz2(getContext(),"media/image/",getContext().getSharedPreferences("MyPref",1).getString("UserId",""));
+        GraphService.startActionBaz2(getContext(),"media/images/",getContext().getSharedPreferences("MyPref",MODE_PRIVATE).getString("UserId",""));
         IntentFilter inF = new IntentFilter(UPDATES_IMAGES);
         ui = new UpdateImages();
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(ui, inF);
@@ -84,7 +84,7 @@ public class Medias extends Fragment {
             @Override
             public void onClick(View v) {
                 all.setChecked(false);
-                GraphService.startActionBaz2(getContext(),"media/image/",getContext().getSharedPreferences("MyPref",MODE_PRIVATE).getString("UserId",""));
+                GraphService.startActionBaz2(getContext(),"media/images/",getContext().getSharedPreferences("MyPref",MODE_PRIVATE).getString("UserId",""));
             }
         });
         all.setOnClickListener(new View.OnClickListener() {
@@ -137,7 +137,9 @@ public class Medias extends Fragment {
 
     public JSONArray getFromFile() {
         try {
-            InputStream is = new FileInputStream(getContext().getCacheDir()+"/images.json");
+            InputStream is;
+            if (all.isChecked())is = new FileInputStream(getContext().getCacheDir()+"/images.json");
+            else is = new FileInputStream(getContext().getCacheDir()+"/"+getContext().getSharedPreferences("MyPref",MODE_PRIVATE).getString("UserId","")+".json");
             int size=is.available();
             byte[] buffer=new byte[size];
             is.read(buffer);
@@ -162,7 +164,9 @@ public class Medias extends Fragment {
 
     public class UpdateImages extends BroadcastReceiver {
         //@Override
+
         public void onReceive(Context context, Intent intent) {
+            item.clear();
             if (null != intent) {
                 list_obj = getFromFile();
                 Log.d("Images", list_obj.toString());

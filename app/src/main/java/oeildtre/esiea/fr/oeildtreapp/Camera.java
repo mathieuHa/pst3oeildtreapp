@@ -68,6 +68,36 @@ public class Camera extends Fragment {
                 Toast.makeText(getContext(), "Picture Taken", Toast.LENGTH_LONG).show();
             }
         });
+        right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {https://oeildtapi.hanotaux.fr/api/control/servo?dir="+direction
+                GraphService.startActionBaz2(getContext(), "control/servo?dir=","d");
+            }
+        });
+        left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GraphService.startActionBaz2(getContext(), "control/servo?dir=","g");
+            }
+        });
+        up.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GraphService.startActionBaz2(getContext(), "control/servo?dir=","h");
+            }
+        });
+        down.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GraphService.startActionBaz2(getContext(), "control/servo?dir=","b");
+            }
+        });
+        center.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GraphService.startActionBaz2(getContext(), "control/servo?dir=","c");
+            }
+        });
 
 
         webView.setOnTouchListener(new View.OnTouchListener() {

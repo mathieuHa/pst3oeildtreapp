@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -224,7 +223,7 @@ public class Connexion extends Fragment {
                     if (resultat != null){
 
 //Initialise tes préférences
-                        Properties = getContext().getSharedPreferences("MyPref", 1);
+                        Properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
                         editor = Properties.edit();
                         editor.putString("Token", resultat.getString("value"));
                         editor.putString("Smail", sid);
@@ -234,7 +233,7 @@ public class Connexion extends Fragment {
 
                         editor.commit();
                     }
-                    return "You're connected as " + getContext().getSharedPreferences("MyPref", 1).getString("Sname", "");
+                    return "You're connected as " + getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", "");
                 }
                 else {
                     return connec.getResponseMessage();
