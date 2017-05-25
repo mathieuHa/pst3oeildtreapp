@@ -8,5 +8,6 @@
         <item>Year</item>
         <item>Camera</item>
         <item>Medias</item>
+        <item>Tchat</item>
     </string-array>
 </resources>

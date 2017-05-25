@@ -59,13 +59,14 @@ public class MainActivity extends AppCompatActivity {
 
         setupToolbar();
 
-        DataModel[] drawerItem = new DataModel[6];
+        DataModel[] drawerItem = new DataModel[7];
         drawerItem[0] = new DataModel(R.drawable.table, "Connexion");
         drawerItem[1] = new DataModel(R.drawable.jour2, "Day");
         drawerItem[2] = new DataModel(R.drawable.mois2, "Month");
         drawerItem[3] = new DataModel(R.drawable.annee2, "Year");
         drawerItem[4] = new DataModel(R.drawable.table, "Camera");
         drawerItem[5] = new DataModel(R.drawable.table, "Medias");
+        drawerItem[6] = new DataModel(R.drawable.table, "Tchat");
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
 
@@ -90,13 +91,16 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new FragMonth();
                 break;
             case 3:
-                fragment = new Tchat();
+                fragment = new FragYear();
                 break;
             case 4:
                 fragment = new Camera();
                 break;
             case 5:
                 fragment = new Medias();
+                break;
+            case 6:
+                fragment = new Tchat();
                 break;
             default:
                 break;
