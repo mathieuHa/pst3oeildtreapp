@@ -111,9 +111,6 @@ public class Connexion extends Fragment {
                 con.setEnabled(false);
                 back.setVisibility(View.VISIBLE);
                 back.setEnabled(true);
-
-                id.setText("");
-                mdp.setText("");
             }
         });
 
