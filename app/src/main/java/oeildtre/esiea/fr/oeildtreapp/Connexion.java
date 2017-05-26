@@ -211,20 +211,17 @@ public class Connexion extends Fragment {
                     Log.e("token",result);
                     in.close();
                     JSONObject resultat = new JSONObject(result);
-                    if (resultat != null){
 
 //Initialise tes préférences
-                        SharedPreferences properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = properties.edit();
-                        editor.putString("Token", resultat.getString("value"));
-                        editor.putString("Smail", sid);
-                        editor.putString("Smdp", smdp);
-                        editor.putString("UserId", resultat.getJSONObject("user").getString("id"));
-                        editor.putString("UserColor", resultat.getJSONObject("user").getString("color"));
-                        editor.putString("Sname", resultat.getJSONObject("user").getString("login"));
-
-                        editor.commit();
-                    }
+                    SharedPreferences properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = properties.edit();
+                    editor.putString("Token", resultat.getString("value"));
+                    editor.putString("Smail", sid);
+                    editor.putString("Smdp", smdp);
+                    editor.putString("UserId", resultat.getJSONObject("user").getString("id"));
+                    editor.putString("UserColor", resultat.getJSONObject("user").getString("color"));
+                    editor.putString("Sname", resultat.getJSONObject("user").getString("login"));
+                    editor.commit();
                     return "You're connected as " + getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", "");
                 }
                 else {

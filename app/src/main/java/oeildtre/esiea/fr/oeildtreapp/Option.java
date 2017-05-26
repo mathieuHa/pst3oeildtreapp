@@ -1,7 +1,10 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -45,22 +50,24 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class Option extends Fragment {
     private ImageView img;
-    private LinearLayout param, color, color_layout, password, password_layout;
-    private ImageButton back1,back2;
+    private EditText psw1, psw2;
+    private LinearLayout param, color, password, password_layout, deco;
+    private ImageButton back2;
+    private Button push;
     private String couleur;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View option = inflater.inflate(R.layout.option, container, false);
-        back1 = (ImageButton) option.findViewById(R.id.back1);
         back2 = (ImageButton) option.findViewById(R.id.back2);
         param = (LinearLayout) option.findViewById(R.id.param);
         color = (LinearLayout) option.findViewById(R.id.color);
-        color_layout = (LinearLayout) option.findViewById(R.id.color_layout);
         password = (LinearLayout) option.findViewById(R.id.password);
         password_layout = (LinearLayout) option.findViewById(R.id.password_layout);
-
-
+        psw1 = (EditText) option.findViewById(R.id.psw1);
+        psw2 = (EditText) option.findViewById(R.id.psw2);
+        push = (Button) option.findViewById(R.id.push);
+        deco = (LinearLayout) option.findViewById(R.id.deco);
 
         paramVisible();
         color.setOnClickListener(new View.OnClickListener() {
@@ -69,7 +76,6 @@ public class Option extends Fragment {
                 ColorPickerDialogBuilder
                         .with(getContext())
                         .setTitle("Choose color")
-                        .initialColor(Color.parseColor(getContext().getSharedPreferences("MyPref",MODE_PRIVATE).getString("UserColor","")))
                         .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
                         .density(12)
                         .setOnColorSelectedListener(new OnColorSelectedListener() {
@@ -81,7 +87,6 @@ public class Option extends Fragment {
                         .setPositiveButton("ok", new ColorPickerClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
-                                (option.findViewById(R.id.target)).setBackgroundColor(selectedColor);
                                 couleur = Integer.toHexString(selectedColor);
                                 couleur = "#"+couleur.substring(2,couleur.length());
                                 new SendColorRequest().execute();
@@ -94,12 +99,6 @@ public class Option extends Fragment {
                         })
                         .build()
                         .show();
-                param.setEnabled(false);
-                param.setVisibility(View.INVISIBLE);
-                color_layout.setEnabled(true);
-                color_layout.setVisibility(View.VISIBLE);
-                back1.setEnabled(true);
-                back1.setVisibility(View.VISIBLE);
             }
         });
         password.setOnClickListener(new View.OnClickListener() {
@@ -113,16 +112,54 @@ public class Option extends Fragment {
                 back2.setVisibility(View.VISIBLE);
             }
         });
-        back1.setOnClickListener(new View.OnClickListener() {
+        push.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                paramVisible();
+                //"/users/new-pass/{id}"
+
             }
         });
         back2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 paramVisible();
+            }
+        });
+        deco.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Dialog dialog;
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+                builder.setMessage("Do you want to log out ?");
+                builder.setCancelable(false);
+                builder.setTitle("Confirmation");
+
+                builder.setPositiveButton("Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                SharedPreferences properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = properties.edit();
+                                editor.putString("Token", "");
+                                editor.putString("UserId", "");
+                                editor.putString("UserColor", "");
+                                editor.putString("Sname", "");
+                                editor.putString("Smail", "");
+                                editor.putString("Smdp", "");
+                                editor.commit();
+                                Toast.makeText(getContext(), "You're disconnected...", Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+                builder.setNegativeButton("No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+                dialog = builder.create();
+                dialog.show();
             }
         });
 
@@ -157,12 +194,8 @@ public class Option extends Fragment {
     public void paramVisible() {
         param.setEnabled(true);
         param.setVisibility(View.VISIBLE);
-        color_layout.setEnabled(false);
-        color_layout.setVisibility(View.INVISIBLE);
         password_layout.setEnabled(false);
         password_layout.setVisibility(View.INVISIBLE);
-        back1.setEnabled(false);
-        back1.setVisibility(View.INVISIBLE);
         back2.setEnabled(false);
         back2.setVisibility(View.INVISIBLE);
     }
@@ -218,8 +251,11 @@ public class Option extends Fragment {
                         break;
                     }
                     result = sb.toString();
-                    Log.e("Color",result);
-                    in.close();
+                    JSONObject resultat = new JSONObject(result);
+                    SharedPreferences properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = properties.edit();
+                    editor.putString("UserColor", resultat.getString("color"));
+                    editor.commit();
                     return "Color changed";
 
                 }
@@ -237,5 +273,4 @@ public class Option extends Fragment {
             Toast.makeText(getContext(), result, Toast.LENGTH_LONG).show();
         }
     }
-
 }

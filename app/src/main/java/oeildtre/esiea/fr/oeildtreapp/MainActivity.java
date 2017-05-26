@@ -1,8 +1,10 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
 
+import android.Manifest;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},1);
         new SendSignInRequest().execute();
         mTitle = getTitle();
         mNavigationDrawerItemTitles = getResources().getStringArray(R.array.navigation_drawer_items_array);
@@ -56,14 +59,14 @@ public class MainActivity extends AppCompatActivity {
         setupToolbar();
 
         DataModel[] drawerItem = new DataModel[8];
-        drawerItem[0] = new DataModel(R.drawable.table, "Connexion");
+        drawerItem[0] = new DataModel(R.drawable.connect, "Connexion");
         drawerItem[1] = new DataModel(R.drawable.jour2, "Day");
         drawerItem[2] = new DataModel(R.drawable.mois2, "Month");
         drawerItem[3] = new DataModel(R.drawable.annee2, "Year");
-        drawerItem[4] = new DataModel(R.drawable.table, "Camera");
-        drawerItem[5] = new DataModel(R.drawable.table, "Medias");
-        drawerItem[6] = new DataModel(R.drawable.table, "Tchat");
-        drawerItem[7] = new DataModel(R.drawable.table, "Option");
+        drawerItem[4] = new DataModel(R.drawable.camera, "Camera");
+        drawerItem[5] = new DataModel(R.drawable.medias, "Medias");
+        drawerItem[6] = new DataModel(R.drawable.chat, "Chat");
+        drawerItem[7] = new DataModel(R.drawable.outils, "Option");
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
 

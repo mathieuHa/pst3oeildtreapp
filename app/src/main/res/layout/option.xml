@@ -8,12 +8,39 @@
         android:id="@+id/param"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="20dp"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="Change password"
+                android:textAppearance="@style/TextAppearance.AppCompat.Button" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                app:srcCompat="@android:drawable/ic_media_next" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/color"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_margin="5dp"
             android:layout_weight="1"
             android:orientation="horizontal">
 
@@ -24,19 +51,21 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="Color setter"
-                android:textAppearance="@style/TextAppearance.AppCompat" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Button" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
                 android:layout_weight="1"
                 app:srcCompat="@android:drawable/ic_media_next" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/password"
+            android:id="@+id/deco"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:orientation="horizontal">
 
             <TextView
@@ -45,12 +74,13 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="Change password"
-                android:textAppearance="@style/TextAppearance.AppCompat" />
+                android:text="Log out"
+                android:textAppearance="@style/TextAppearance.AppCompat.Button" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
                 android:layout_weight="1"
                 app:srcCompat="@android:drawable/ic_media_next" />
         </LinearLayout>
@@ -58,45 +88,61 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/color_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <ImageButton
-            android:id="@+id/back1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="?attr/actionModeCloseDrawable" />
-
-        <TextView
-            android:id="@+id/target"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/password_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center_vertical"
+
         android:orientation="vertical">
 
         <ImageButton
             android:id="@+id/back2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="start"
             app:srcCompat="?attr/actionModeCloseDrawable" />
 
-        <ImageView
-            android:id="@+id/imageView"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/connect" />
+            android:layout_height="match_parent"
+            android:layout_margin="20dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/target"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/target"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Change your password" />
+
+            <EditText
+                android:id="@+id/psw1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:ems="10"
+                android:hint="New password..."
+                android:inputType="textPassword" />
+
+            <EditText
+                android:id="@+id/psw2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:ems="10"
+                android:hint="Rewrite the same password..."
+                android:inputType="textPassword" />
+
+            <Button
+                android:id="@+id/push"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Send" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </FrameLayout>

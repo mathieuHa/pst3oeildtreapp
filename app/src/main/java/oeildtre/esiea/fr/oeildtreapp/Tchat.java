@@ -7,13 +7,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.drm.DrmStore;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -48,7 +46,7 @@ import static android.content.Context.MODE_PRIVATE;
 public class Tchat extends Fragment {
     public static final String UPDATES_CHAT="UPDATES_CHAT";
     private UpdateChat uc;
-    private boolean dl =false;
+    private boolean dl = false, valid = false;
     private EditText edit;
     private ImageButton send;
     private ListView lv;
@@ -96,6 +94,7 @@ public class Tchat extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View tchat = inflater.inflate(R.layout.tchat, container, false);
+        if (!getContext().getSharedPreferences("MyPref",MODE_PRIVATE).getString("Token","").equals("")) valid = true;
         edit = (EditText) tchat.findViewById(R.id.edit);
         send = (ImageButton) tchat.findViewById(R.id.send);
         lv = (ListView) tchat.findViewById(R.id.list);
@@ -105,8 +104,8 @@ public class Tchat extends Fragment {
         uc = new UpdateChat();
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(uc, inF);
 
-        mSocket.on("message", onNewMessage);
-        mSocket.connect();
+        if (valid)mSocket.on("message", onNewMessage);
+        if (valid)mSocket.connect();
         edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -124,7 +123,7 @@ public class Tchat extends Fragment {
                     obj.put("token",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Token",""));
                     obj.put("id",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId",""));
                     obj.put("color",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserColor",""));
-                    mSocket.emit("message",obj);
+                    if (valid)mSocket.emit("message",obj);
                     list.add(new Message(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname",""),
                             edit.getText().toString(),
                             getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId",""),
@@ -149,8 +148,8 @@ public class Tchat extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(uc);
-        mSocket.disconnect();
-        mSocket.off("message", onNewMessage);
+        if (valid)mSocket.disconnect();
+        if (valid)mSocket.off("message", onNewMessage);
     }
 
     public JSONArray getFromFile() {
@@ -206,10 +205,8 @@ public class Tchat extends Fragment {
             if (viewHolder == null) {
                 viewHolder = new TweetViewHolder();
                 viewHolder.msg = (LinearLayout) convertView.findViewById(R.id.msg);
-                viewHolder.color = (LinearLayout) convertView.findViewById(R.id.color);
                 viewHolder.pseudo = (TextView) convertView.findViewById(R.id.pseudo);
                 viewHolder.text = (TextView) convertView.findViewById(R.id.sms);
-                viewHolder.point = (TextView) convertView.findViewById(R.id.point);
                 convertView.setTag(viewHolder);
             }
 
@@ -219,24 +216,22 @@ public class Tchat extends Fragment {
             if (message.id.equals(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId", ""))){
                 viewHolder.msg.setGravity(Gravity.RIGHT);
                 viewHolder.pseudo.setText(message.autor);
-                viewHolder.point.setText(" : ");
-                viewHolder.pseudo.setTextColor(Color.parseColor(message.color));
+                if (valid && message.color.contains("#")) viewHolder.pseudo.setTextColor(Color.parseColor(message.color));
             } else {
                 viewHolder.msg.setGravity(Gravity.LEFT);
                 viewHolder.pseudo.setText(message.autor);
-                viewHolder.point.setText(" : ");
                 viewHolder.pseudo.setTextColor(Color.RED);
-                Log.d("Couleur",message.color);
                 if (message.color.contains("#")) viewHolder.pseudo.setTextColor(Color.parseColor(message.color));//Integer.valueOf(message.color));
             }
             viewHolder.text.setText(message.msg);
+
 
             return convertView;
         }
         private class TweetViewHolder{
             private TextView pseudo;
-            private TextView text,point;
-            private LinearLayout msg,color;
+            private TextView text;
+            private LinearLayout msg;
 
         }
     }
