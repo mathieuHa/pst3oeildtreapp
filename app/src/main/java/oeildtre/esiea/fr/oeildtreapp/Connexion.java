@@ -19,13 +19,10 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Iterator;
@@ -36,9 +33,6 @@ import static android.content.Context.MODE_PRIVATE;
 
 
 public class Connexion extends Fragment {
-    private SharedPreferences Properties;
-    private SharedPreferences.Editor editor;
-    private GraphService gs = new GraphService();
     private EditText id,mdp,name;
     private String sid,smdp,sname,result;
 
@@ -90,8 +84,8 @@ public class Connexion extends Fragment {
                 ins.setEnabled(false);
                 back.setVisibility(View.VISIBLE);
                 back.setEnabled(true);
-                id.setText(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Smail", " "));
-                mdp.setText(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Smdp", " "));
+                id.setText(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Smail", ""));
+                mdp.setText(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Smdp", ""));
             }
         });
         up.setOnClickListener(new View.OnClickListener() {
@@ -220,8 +214,8 @@ public class Connexion extends Fragment {
                     if (resultat != null){
 
 //Initialise tes préférences
-                        Properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
-                        editor = Properties.edit();
+                        SharedPreferences properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = properties.edit();
                         editor.putString("Token", resultat.getString("value"));
                         editor.putString("Smail", sid);
                         editor.putString("Smdp", smdp);

@@ -8,7 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.widget.GridLayoutManager;
+//import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -33,7 +33,7 @@ public class Medias extends Fragment {
 
     private static final String TAG = "RecyclerViewFragment";
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
-    private static final int SPAN_COUNT = 2;
+    //private static final int SPAN_COUNT = 2;
     //private static final int DATASET_COUNT = 60;
     protected LayoutManagerType mCurrentLayoutManagerType;
     protected RecyclerView mRecyclerView;
@@ -42,7 +42,6 @@ public class Medias extends Fragment {
     private List<ItemRecyclerView> item = new ArrayList<>();
     private GraphService gs = new GraphService();
     private UpdateImages ui;
-    private JSONArray list_obj;
     private RadioButton my,all;
     @Override
     public void onDestroy() {
@@ -158,7 +157,7 @@ public class Medias extends Fragment {
      */
 
     private enum LayoutManagerType {
-        GRID_LAYOUT_MANAGER,
+        //GRID_LAYOUT_MANAGER,
         LINEAR_LAYOUT_MANAGER
     }
 
@@ -168,10 +167,10 @@ public class Medias extends Fragment {
         public void onReceive(Context context, Intent intent) {
             item.clear();
             if (null != intent) {
-                list_obj = getFromFile();
+                JSONArray list_obj = getFromFile();
                 Log.d("Images", list_obj.toString());
                 try {
-                    for (int i=0; i<list_obj.length();i++) {
+                    for (int i = 0; i< list_obj.length(); i++) {
                         String autor = list_obj.getJSONObject(i).getJSONObject("user").getString("login");
                         String url = gs.getMedia() +"/"+ list_obj.getJSONObject(i).getString("url");
                         String urlth = gs.getMedia() +"/"+ list_obj.getJSONObject(i).getString("urlth");

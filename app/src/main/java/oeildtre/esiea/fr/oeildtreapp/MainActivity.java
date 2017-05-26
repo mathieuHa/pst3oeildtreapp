@@ -21,12 +21,9 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Iterator;
@@ -41,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private CharSequence mTitle;
-    private String result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public class SendSignInRequest extends AsyncTask<String, Void, String> {
+    private class SendSignInRequest extends AsyncTask<String, Void, String> {
         JSONObject postDataParams;
 
         @Override
@@ -229,12 +225,12 @@ public class MainActivity extends AppCompatActivity {
                     StringBuffer sb = new StringBuffer("");
                     String line = "";
 
-                    while ((line = in.readLine()) != null) {
+                    while (null != (line = in.readLine())) {
 
                         sb.append(line);
                         break;
                     }
-                    result = sb.toString();
+                    String result = sb.toString();
                     Log.e("token", result);
                     in.close();
                     JSONObject resultat = new JSONObject(result);

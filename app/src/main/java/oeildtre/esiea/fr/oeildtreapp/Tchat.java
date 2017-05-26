@@ -3,16 +3,19 @@ package oeildtre.esiea.fr.oeildtreapp;
 
 
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -23,9 +26,13 @@ import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +41,8 @@ import static android.content.Context.MODE_PRIVATE;
 
 
 public class Tchat extends Fragment {
+    public static final String UPDATES_CHAT="UPDATES_CHAT";
+    private UpdateChat uc;
     private EditText edit;
     private ImageButton send;
     private ListView lv;
@@ -46,15 +55,17 @@ public class Tchat extends Fragment {
                 @Override
                 public void run() {
                     try {
-                        Log.i("args 0" , args[0].toString());
+                        Log.i("Message" , args[0].toString());
                         JSONObject data = new JSONObject(args[0].toString());
                         String username;
                         String message;
                         username = data.getString("autor");
-                        message = " : "+data.getString("msg");
+                        message = data.getString("msg");
                         list.add(new Message(username, message));
                         adapter = new MessageAdapter(getContext(),list);
                         lv.setAdapter(adapter);
+                        lv.setSelection(list.size()-1);
+                        lv.requestFocus();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -62,12 +73,15 @@ public class Tchat extends Fragment {
             });
         }
     };
+
     private Socket mSocket;
 
     {
         try {
             mSocket = IO.socket("http://oeildtcam.hanotaux.fr:8080/");
-        } catch (URISyntaxException e) {}
+        } catch (URISyntaxException e) {
+            e.getStackTrace();
+        }
     }
 
     @Override
@@ -76,12 +90,11 @@ public class Tchat extends Fragment {
         edit = (EditText) tchat.findViewById(R.id.edit);
         send = (ImageButton) tchat.findViewById(R.id.send);
         lv = (ListView) tchat.findViewById(R.id.list);
-        list = new ArrayList<Message>();
-        adapter = new MessageAdapter(getContext(),list);
-        lv.setAdapter(adapter);
-
-
-
+        list = new ArrayList<>();
+        GraphService.startActionBaz2(getContext(),"chat/","messages");
+        IntentFilter inF = new IntentFilter(UPDATES_CHAT);
+        uc = new UpdateChat();
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(uc, inF);
 
         mSocket.on("message", onNewMessage);
         mSocket.connect();
@@ -99,10 +112,14 @@ public class Tchat extends Fragment {
                     JSONObject obj = new JSONObject();
                     obj.put("autor",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname",""));
                     obj.put("msg"," : "+ edit.getText().toString());
+                    obj.put("token",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Token",""));
+                    obj.put("id",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId",""));
                     mSocket.emit("message",obj);
                     list.add(new Message(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname","")," : " + edit.getText().toString()));
                     adapter = new MessageAdapter(getContext(),list);
                     lv.setAdapter(adapter);
+                    lv.setSelection(list.size()-1);
+                    lv.requestFocus();
                     edit.setText("");
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -118,23 +135,40 @@ public class Tchat extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(uc);
 
         mSocket.disconnect();
         mSocket.off("message", onNewMessage);
     }
 
+    public JSONArray getFromFile() {
+        try {
+            InputStream is = new FileInputStream(getContext().getCacheDir()+"/messages.json");
+            int size=is.available();
+            byte[] buffer=new byte[size];
+            is.read(buffer);
+            is.close();
+            String text=new String(buffer);
+            return new JSONArray(text);
+
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return new JSONArray();
+    }
+
     private class Message{
-        public String msg, autor;
-        public Message(String autor, String msg){
+        String msg, autor;
+        Message(String autor, String msg){
             this.autor = autor;
             this.msg = msg;
         }
     }
 
-    public class MessageAdapter extends ArrayAdapter<Message> {
+    private class MessageAdapter extends ArrayAdapter<Message> {
 
         //tweets est la liste des models à afficher
-        public MessageAdapter(Context context, List<Message> messages) {
+        MessageAdapter(Context context, List<Message> messages) {
             super(context, 0, messages);
         }
 
@@ -162,8 +196,32 @@ public class Tchat extends Fragment {
             return convertView;
         }
         private class TweetViewHolder{
-            public TextView pseudo;
-            public TextView text;
+            private TextView pseudo;
+            private TextView text;
+        }
+    }
+
+    public class UpdateChat extends BroadcastReceiver {
+        //@Override
+
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent) {
+                JSONArray list_obj = getFromFile();
+                Log.d("Tchat", list_obj.toString());
+                try {
+                    for (int i=0; i<list_obj.length();i++) {
+                        String autor = list_obj.getJSONObject(i).getJSONObject("user").getString("login");
+                        String msg = list_obj.getJSONObject(i).getString("text");
+                        list.add(new Message(autor, msg));
+                    }
+                    adapter = new MessageAdapter(getContext(),list);
+                    lv.setAdapter(adapter);
+                    lv.setSelection(list.size()-1);
+                    lv.requestFocus();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

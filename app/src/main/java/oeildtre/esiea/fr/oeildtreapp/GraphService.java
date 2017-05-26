@@ -196,7 +196,12 @@ public class GraphService extends IntentService {
             if (HttpsURLConnection.HTTP_OK == connection.getResponseCode()) {
                 copyInputStreamToFile(connection.getInputStream(), new File(getCacheDir(), "/" + param2 + ".json"));
                 Log.d("Max", param2 + " DL");
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Medias.UPDATES_IMAGES));
+                switch (param2) {
+                    case "images":
+                        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Medias.UPDATES_IMAGES));
+                    case "messages":
+                        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Tchat.UPDATES_CHAT));
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
