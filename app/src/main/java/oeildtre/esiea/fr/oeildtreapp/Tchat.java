@@ -111,7 +111,7 @@ public class Tchat extends Fragment {
                 try {
                     JSONObject obj = new JSONObject();
                     obj.put("autor",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname",""));
-                    obj.put("msg"," : "+ edit.getText().toString());
+                    obj.put("msg",edit.getText().toString());
                     obj.put("token",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Token",""));
                     obj.put("id",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId",""));
                     mSocket.emit("message",obj);
