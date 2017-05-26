@@ -60,7 +60,7 @@ public class Tchat extends Fragment {
                         String username;
                         String message;
                         username = data.getString("autor");
-                        message = data.getString("msg");
+                        message = " : "+data.getString("msg");
                         list.add(new Message(username, message));
                         adapter = new MessageAdapter(getContext(),list);
                         lv.setAdapter(adapter);
@@ -211,7 +211,7 @@ public class Tchat extends Fragment {
                 try {
                     for (int i=0; i<list_obj.length();i++) {
                         String autor = list_obj.getJSONObject(i).getJSONObject("user").getString("login");
-                        String msg = list_obj.getJSONObject(i).getString("text");
+                        String msg = " : "+list_obj.getJSONObject(i).getString("text");
                         list.add(new Message(autor, msg));
                     }
                     adapter = new MessageAdapter(getContext(),list);
