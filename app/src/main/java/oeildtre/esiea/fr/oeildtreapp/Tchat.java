@@ -7,10 +7,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.drm.DrmStore;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -43,6 +48,7 @@ import static android.content.Context.MODE_PRIVATE;
 public class Tchat extends Fragment {
     public static final String UPDATES_CHAT="UPDATES_CHAT";
     private UpdateChat uc;
+    private boolean dl =false;
     private EditText edit;
     private ImageButton send;
     private ListView lv;
@@ -59,13 +65,16 @@ public class Tchat extends Fragment {
                         JSONObject data = new JSONObject(args[0].toString());
                         String username;
                         String message;
+                        String id;
+                        String colour;
                         username = data.getString("autor");
-                        message = " : "+data.getString("msg");
-                        list.add(new Message(username, message));
+                        message =data.getString("msg");
+                        id = data.getString("id");
+                        colour = data.getString("color");
+                        list.add(new Message(username, message, id, colour));
                         adapter = new MessageAdapter(getContext(),list);
                         lv.setAdapter(adapter);
                         lv.setSelection(list.size()-1);
-                        lv.requestFocus();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -114,12 +123,16 @@ public class Tchat extends Fragment {
                     obj.put("msg",edit.getText().toString());
                     obj.put("token",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Token",""));
                     obj.put("id",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId",""));
+                    obj.put("color",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserColor",""));
                     mSocket.emit("message",obj);
-                    list.add(new Message(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname","")," : " + edit.getText().toString()));
+                    list.add(new Message(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname",""),
+                            edit.getText().toString(),
+                            getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId",""),
+                            getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserColor","")));
                     adapter = new MessageAdapter(getContext(),list);
                     lv.setAdapter(adapter);
                     lv.setSelection(list.size()-1);
-                    lv.requestFocus();
+                    edit.requestFocus();
                     edit.setText("");
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -136,14 +149,15 @@ public class Tchat extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(uc);
-
         mSocket.disconnect();
         mSocket.off("message", onNewMessage);
     }
 
     public JSONArray getFromFile() {
         try {
-            InputStream is = new FileInputStream(getContext().getCacheDir()+"/messages.json");
+            InputStream is;
+            if (dl) is = new FileInputStream(getContext().getCacheDir()+"/messages.json");
+            else is = new FileInputStream(getContext().getCacheDir()+"/users.json");
             int size=is.available();
             byte[] buffer=new byte[size];
             is.read(buffer);
@@ -158,10 +172,19 @@ public class Tchat extends Fragment {
     }
 
     private class Message{
-        String msg, autor;
-        Message(String autor, String msg){
+        String msg, autor, id, color;
+        Message(String autor, String msg, String id, String color){
             this.autor = autor;
             this.msg = msg;
+            this.id = id;
+            this.color = color;
+        }
+    }
+    private class Users{
+        String color, id;
+        Users(String color, String id){
+            this.color = color;
+            this.id = id;
         }
     }
 
@@ -175,49 +198,68 @@ public class Tchat extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            if(convertView == null){
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.message,parent, false);
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.message, parent, false);
             }
 
             TweetViewHolder viewHolder = (TweetViewHolder) convertView.getTag();
-            if(viewHolder == null){
+            if (viewHolder == null) {
                 viewHolder = new TweetViewHolder();
+                viewHolder.msg = (LinearLayout) convertView.findViewById(R.id.msg);
+                viewHolder.color = (LinearLayout) convertView.findViewById(R.id.color);
                 viewHolder.pseudo = (TextView) convertView.findViewById(R.id.pseudo);
                 viewHolder.text = (TextView) convertView.findViewById(R.id.sms);
+                viewHolder.point = (TextView) convertView.findViewById(R.id.point);
                 convertView.setTag(viewHolder);
             }
 
             //getItem(position) va récupérer l'item [position] de la List<Tweet> tweets
             Message message = getItem(position);
-
             //il ne reste plus qu'à remplir notre vue
-            viewHolder.pseudo.setText(message.autor);
+            if (message.id.equals(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId", ""))){
+                viewHolder.msg.setGravity(Gravity.RIGHT);
+                viewHolder.pseudo.setText(message.autor);
+                viewHolder.point.setText(" : ");
+                viewHolder.pseudo.setTextColor(Color.parseColor(message.color));
+            } else {
+                viewHolder.msg.setGravity(Gravity.LEFT);
+                viewHolder.pseudo.setText(message.autor);
+                viewHolder.point.setText(" : ");
+                viewHolder.pseudo.setTextColor(Color.RED);
+                Log.d("Couleur",message.color);
+                if (message.color.contains("#")) viewHolder.pseudo.setTextColor(Color.parseColor(message.color));//Integer.valueOf(message.color));
+            }
             viewHolder.text.setText(message.msg);
+
             return convertView;
         }
         private class TweetViewHolder{
             private TextView pseudo;
-            private TextView text;
+            private TextView text,point;
+            private LinearLayout msg,color;
+
         }
     }
 
     public class UpdateChat extends BroadcastReceiver {
         //@Override
-
         public void onReceive(Context context, Intent intent) {
+            list.clear();
             if (null != intent) {
+                dl=true;
                 JSONArray list_obj = getFromFile();
                 Log.d("Tchat", list_obj.toString());
                 try {
                     for (int i=0; i<list_obj.length();i++) {
                         String autor = list_obj.getJSONObject(i).getJSONObject("user").getString("login");
-                        String msg = " : "+list_obj.getJSONObject(i).getString("text");
-                        list.add(new Message(autor, msg));
+                        String msg = list_obj.getJSONObject(i).getString("text");
+                        String id = list_obj.getJSONObject(i).getJSONObject("user").getString("id");
+                        String color = list_obj.getJSONObject(i).getJSONObject("user").getString("color");
+                        list.add(new Message(autor, msg, id, color));
                     }
                     adapter = new MessageAdapter(getContext(),list);
                     lv.setAdapter(adapter);
                     lv.setSelection(list.size()-1);
-                    lv.requestFocus();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

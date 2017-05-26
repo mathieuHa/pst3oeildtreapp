@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
         setupToolbar();
 
-        DataModel[] drawerItem = new DataModel[7];
+        DataModel[] drawerItem = new DataModel[8];
         drawerItem[0] = new DataModel(R.drawable.table, "Connexion");
         drawerItem[1] = new DataModel(R.drawable.jour2, "Day");
         drawerItem[2] = new DataModel(R.drawable.mois2, "Month");
@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         drawerItem[4] = new DataModel(R.drawable.table, "Camera");
         drawerItem[5] = new DataModel(R.drawable.table, "Medias");
         drawerItem[6] = new DataModel(R.drawable.table, "Tchat");
+        drawerItem[7] = new DataModel(R.drawable.table, "Option");
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
 
@@ -97,6 +98,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case 6:
                 fragment = new Tchat();
+                break;
+            case 7:
+                fragment = new Option();
                 break;
             default:
                 break;
@@ -242,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
                         editor.putString("Token", resultat.getString("value"));
                         editor.putString("UserId", resultat.getJSONObject("user").getString("id"));
                         editor.putString("Sname", resultat.getJSONObject("user").getString("login"));
+                        editor.putString("UserColor", resultat.getJSONObject("user").getString("color"));
 
                         editor.commit();
                     }

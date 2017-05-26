@@ -9,5 +9,6 @@
         <item>Camera</item>
         <item>Medias</item>
         <item>Tchat</item>
+        <item>Option</item>
     </string-array>
 </resources>

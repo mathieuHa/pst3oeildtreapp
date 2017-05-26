@@ -16,6 +16,7 @@
 
         <ListView
             android:id="@+id/list"
+            style="@style/Widget.AppCompat.Light.ListView.DropDown"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="bottom" />
@@ -33,7 +34,8 @@
             android:layout_weight="1"
             android:ems="10"
             android:hint="Tap your message..."
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:selectAllOnFocus="true" />
 
         <ImageButton
             android:id="@+id/send"

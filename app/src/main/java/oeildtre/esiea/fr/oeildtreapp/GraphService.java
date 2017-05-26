@@ -19,6 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Objects;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -191,16 +192,17 @@ public class GraphService extends IntentService {
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("X-Auth-Token", getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Token", ""));
+            if (param2.equals("messages"))connection.setRequestProperty("limit", "100");
             connection.connect();
-            Log.d("Max", api + "/" + param1 + param2);
+            Log.d("Max", api + "/" + param1 + param2 + " "+String.valueOf(connection.getResponseCode()));
             if (HttpsURLConnection.HTTP_OK == connection.getResponseCode()) {
                 copyInputStreamToFile(connection.getInputStream(), new File(getCacheDir(), "/" + param2 + ".json"));
                 Log.d("Max", param2 + " DL");
                 switch (param2) {
-                    case "images":
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Medias.UPDATES_IMAGES));
+                    default:
+                        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Medias.UPDATES_IMAGES));break;
                     case "messages":
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Tchat.UPDATES_CHAT));
+                        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Tchat.UPDATES_CHAT));break;
                 }
             }
         } catch (IOException e) {

@@ -220,6 +220,7 @@ public class Connexion extends Fragment {
                         editor.putString("Smail", sid);
                         editor.putString("Smdp", smdp);
                         editor.putString("UserId", resultat.getJSONObject("user").getString("id"));
+                        editor.putString("UserColor", resultat.getJSONObject("user").getString("color"));
                         editor.putString("Sname", resultat.getJSONObject("user").getString("login"));
 
                         editor.commit();
