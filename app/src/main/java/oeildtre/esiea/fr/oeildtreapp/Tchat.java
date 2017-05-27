@@ -232,7 +232,7 @@ public class Tchat extends Fragment {
                 viewHolder.text.setTextColor(Color.parseColor("#8be2ff"));
                 viewHolder.text.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
                 final TweetViewHolder finalViewHolder = viewHolder;
-                viewHolder.msg.setOnClickListener(new View.OnClickListener() {
+                viewHolder.text.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         String url = finalViewHolder.text.getText().toString();
