@@ -15,12 +15,9 @@ public class ItemRecyclerView {
     public String getText() {
         return text;
     }
-
     public String getImageUrlTh() {
         return imageUrlTh;
     }
-    public String getImageUrl() {
-        return imageUrl;
-    }
+    public String getImageUrl() { return imageUrl; }
 
 }

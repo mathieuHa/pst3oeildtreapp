@@ -34,5 +34,6 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.0'
     compile 'com.github.nkzawa:socket.io-client:0.3.0'
     compile 'com.github.QuadFlask:colorpicker:0.0.13'
+    compile 'com.github.chrisbanes:PhotoView:2.0.0'
     testCompile 'junit:junit:4.12'
 }

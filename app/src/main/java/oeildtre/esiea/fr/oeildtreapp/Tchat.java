@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -222,6 +224,23 @@ public class Tchat extends Fragment {
                 viewHolder.pseudo.setText(message.autor);
                 viewHolder.pseudo.setTextColor(Color.RED);
                 if (message.color.contains("#")) viewHolder.pseudo.setTextColor(Color.parseColor(message.color));//Integer.valueOf(message.color));
+            }
+            viewHolder.text.setTextColor(Color.DKGRAY);
+            viewHolder.text.setOnClickListener(null);
+            viewHolder.text.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
+            if (message.msg.contains(".jpg")) {
+                viewHolder.text.setTextColor(Color.parseColor("#8be2ff"));
+                viewHolder.text.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
+                final TweetViewHolder finalViewHolder = viewHolder;
+                viewHolder.msg.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String url = finalViewHolder.text.getText().toString();
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse(url));
+                        startActivity(i);
+                    }
+                });
             }
             viewHolder.text.setText(message.msg);
 
