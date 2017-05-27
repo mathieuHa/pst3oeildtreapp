@@ -2,14 +2,19 @@ package oeildtre.esiea.fr.oeildtreapp;
 
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -17,6 +22,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,6 +35,7 @@ import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Iterator;
@@ -40,14 +50,57 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private CharSequence mTitle;
+    private boolean valid = false;
+    private Socket mSocket;
+    private Emitter.Listener onNewMessage = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Log.i("Message", args[0].toString());
+                        JSONObject data = new JSONObject(args[0].toString());
+                        String username = data.getString("autor");
+                        String message = data.getString("msg");
+                        Intent notifyIntent = new Intent(getApplicationContext(), MainActivity.class);
+// Sets the Activity to start in a new, empty task
+                        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+// Creates the PendingIntent
+                        PendingIntent notifyPendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                        Notification repliedNotification =
+                                new Notification.Builder(getBaseContext())
+                                        .setSmallIcon(R.drawable.logo_round)
+                                        .setContentText(username + " : " + message)
+                                        .setContentIntent(notifyPendingIntent)
+                                        .build();
+                        // Issue the new notification.
+                        NotificationManager notificationManager =
+                                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+                        if (!username.equals(getSharedPreferences("MyPref",MODE_PRIVATE).getString("Sname","")))notificationManager.notify(1, repliedNotification);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (valid)mSocket.disconnect();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},1);
-        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
         new SendSignInRequest().execute();
+
         mTitle = getTitle();
         mNavigationDrawerItemTitles = getResources().getStringArray(R.array.navigation_drawer_items_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -266,6 +319,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
+            try {
+                mSocket = IO.socket("http://oeildtcam.hanotaux.fr:8080/");
+                mSocket.connect();
+                mSocket.on("message",onNewMessage);
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+            valid = true;
         }
     }
 }
