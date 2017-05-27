@@ -8,8 +8,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -43,15 +46,16 @@ import java.util.Iterator;
 import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
-
-    Toolbar toolbar;
-    android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
+    public static final int NOTIFICATION_ID= 99999;
+    private Toolbar toolbar;
+    private android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
     private String[] mNavigationDrawerItemTitles;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private CharSequence mTitle;
     private boolean valid = false;
     private Socket mSocket;
+    private NotificationManager notificationManager;
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -63,23 +67,31 @@ public class MainActivity extends AppCompatActivity {
                         JSONObject data = new JSONObject(args[0].toString());
                         String username = data.getString("autor");
                         String message = data.getString("msg");
+
+
                         Intent notifyIntent = new Intent(getApplicationContext(), MainActivity.class);
-// Sets the Activity to start in a new, empty task
+                        // Sets the Activity to start in a new, empty task
                         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-// Creates the PendingIntent
+                        // Creates the PendingIntent
                         PendingIntent notifyPendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                         Notification repliedNotification =
                                 new Notification.Builder(getBaseContext())
                                         .setSmallIcon(R.drawable.logo_round)
+                                        .setContentTitle(getString(R.string.app_name))
                                         .setContentText(username + " : " + message)
                                         .setContentIntent(notifyPendingIntent)
                                         .build();
                         // Issue the new notification.
-                        NotificationManager notificationManager =
-                                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-                        if (!username.equals(getSharedPreferences("MyPref",MODE_PRIVATE).getString("Sname","")))notificationManager.notify(1, repliedNotification);
+
+                        if (!username.equals(getSharedPreferences("MyPref",MODE_PRIVATE).getString("Sname","")) && !username.equals("Server")){
+                            notificationManager.notify(NOTIFICATION_ID, repliedNotification);
+                            Vibrator v = (Vibrator) getBaseContext().getSystemService(Context.VIBRATOR_SERVICE);
+                            v.vibrate(500);
+                            ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
+                            toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -98,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancel(NOTIFICATION_ID);
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},1);
         new SendSignInRequest().execute();
 

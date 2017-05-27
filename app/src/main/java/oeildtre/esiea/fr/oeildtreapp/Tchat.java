@@ -3,6 +3,7 @@ package oeildtre.esiea.fr.oeildtreapp;
 
 
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -43,6 +44,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.content.Context.NOTIFICATION_SERVICE;
+import static oeildtre.esiea.fr.oeildtreapp.MainActivity.NOTIFICATION_ID;
 
 
 public class Tchat extends Fragment {
@@ -61,6 +64,8 @@ public class Tchat extends Fragment {
                 @Override
                 public void run() {
                     try {
+                        NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(NOTIFICATION_SERVICE);
+                        notificationManager.cancel(NOTIFICATION_ID);
                         Log.i("Message" , args[0].toString());
                         JSONObject data = new JSONObject(args[0].toString());
                         String username;
@@ -125,16 +130,19 @@ public class Tchat extends Fragment {
                     obj.put("token",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Token",""));
                     obj.put("id",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId",""));
                     obj.put("color",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserColor",""));
-                    if (valid)mSocket.emit("message",obj);
-                    list.add(new Message(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname",""),
-                            edit.getText().toString(),
-                            getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId",""),
-                            getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserColor","")));
-                    adapter = new MessageAdapter(getContext(),list);
-                    lv.setAdapter(adapter);
-                    lv.setSelection(list.size()-1);
-                    edit.requestFocus();
-                    edit.setText("");
+                    if (valid && edit.getText().length() > 0) {
+                        mSocket.emit("message", obj);
+                        list.add(new Message(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", ""),
+                                edit.getText().toString(),
+                                getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId", ""),
+                                getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserColor", "")));
+
+                        adapter = new MessageAdapter(getContext(), list);
+                        lv.setAdapter(adapter);
+                        lv.setSelection(list.size() - 1);
+                        edit.requestFocus();
+                        edit.setText("");
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
