@@ -44,9 +44,9 @@ public class MyService extends Service {
                 final PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, in, FLAG_ONE_SHOT);
 
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getBaseContext())
-                                .setSmallIcon(R.drawable.logo_round)
-                                .setContentTitle(getString(R.string.app_name))
-                                .setContentText(username+" : "+message)
+                        .setSmallIcon(R.drawable.logo_round)
+                        .setContentTitle(getString(R.string.app_name))
+                        .setContentText(username+" : "+message)
                         .setContentIntent(pendingIntent);
 
                 if (!username.equals(getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", "")) && !username.equals("Server")) {
@@ -61,6 +61,33 @@ public class MyService extends Service {
             }
         }
     };
+    private Emitter.Listener onWriting = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            try {
+                Log.i("MyService", args[0].toString());
+                JSONObject data = new JSONObject(args[0].toString());
+                String username = data.getString("autor");
+                String message = data.getString("msg");
+
+                notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                final Intent in = new Intent(getApplicationContext(),MainActivity.class);
+                final PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, in, FLAG_ONE_SHOT);
+
+                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getBaseContext())
+                        .setSmallIcon(R.drawable.logo_round)
+                        .setContentTitle(getString(R.string.app_name))
+                        .setContentText(username+" "+message)
+                        .setContentIntent(pendingIntent);
+
+                if (!username.equals(getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", "")) && !username.equals("Server")) {
+                    notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
 
     @Override
@@ -68,6 +95,7 @@ public class MyService extends Service {
         super.onCreate();
         mSocket = SocketIO.getInstance().getSocket();
         mSocket.on("message", onNewMessage);
+        mSocket.on("writing", onWriting);
     }
 
     @Override

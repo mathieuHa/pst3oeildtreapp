@@ -110,7 +110,21 @@ public class Tchat extends Fragment {
             mSocket = SocketIO.getInstance().getSocket();
         }
         if (valid)mSocket.on("message", onNewMessage);
+        edit.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
 
+                try {
+                    JSONObject obj = new JSONObject();
+                    obj.put("autor",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname",""));
+                    if(edit.getText().length() > 5)mSocket.emit("writing",obj);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+        });
         edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
