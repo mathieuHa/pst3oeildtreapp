@@ -46,7 +46,7 @@ import java.util.Iterator;
 import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
-    public static final int NOTIFICATION_ID= 99999;
+
     private Toolbar toolbar;
     private android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
     private String[] mNavigationDrawerItemTitles;
@@ -54,64 +54,13 @@ public class MainActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private CharSequence mTitle;
     private boolean valid = false;
-    private Socket mSocket;
-    private NotificationManager notificationManager;
-    private Emitter.Listener onNewMessage = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Log.i("Message", args[0].toString());
-                        JSONObject data = new JSONObject(args[0].toString());
-                        String username = data.getString("autor");
-                        String message = data.getString("msg");
 
-
-                        Intent notifyIntent = new Intent(getApplicationContext(), MainActivity.class);
-                        // Sets the Activity to start in a new, empty task
-                        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        // Creates the PendingIntent
-                        PendingIntent notifyPendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                        Notification repliedNotification =
-                                new Notification.Builder(getBaseContext())
-                                        .setSmallIcon(R.drawable.logo_round)
-                                        .setContentTitle(getString(R.string.app_name))
-                                        .setContentText(username + " : " + message)
-                                        .setContentIntent(notifyPendingIntent)
-                                        .build();
-                        // Issue the new notification.
-
-
-                        if (!username.equals(getSharedPreferences("MyPref",MODE_PRIVATE).getString("Sname","")) && !username.equals("Server")){
-                            notificationManager.notify(NOTIFICATION_ID, repliedNotification);
-                            Vibrator v = (Vibrator) getBaseContext().getSystemService(Context.VIBRATOR_SERVICE);
-                            v.vibrate(500);
-                            ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
-                            toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
-    };
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (valid)mSocket.disconnect();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.cancel(NOTIFICATION_ID);
+
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},1);
         new SendSignInRequest().execute();
 
@@ -333,14 +282,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
-            try {
-                mSocket = IO.socket("http://oeildtcam.hanotaux.fr:8080/");
-                mSocket.connect();
-                mSocket.on("message",onNewMessage);
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-            valid = true;
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            Intent intent = new Intent(MainActivity.this, MyService.class);
+            startService(intent);
         }
     }
 }

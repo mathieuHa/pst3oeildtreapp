@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -45,7 +46,7 @@ import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.NOTIFICATION_SERVICE;
-import static oeildtre.esiea.fr.oeildtreapp.MainActivity.NOTIFICATION_ID;
+import static oeildtre.esiea.fr.oeildtreapp.MyService.NOTIFICATION_ID;
 
 
 public class Tchat extends Fragment {
@@ -90,17 +91,11 @@ public class Tchat extends Fragment {
 
     private Socket mSocket;
 
-    {
-        try {
-            mSocket = IO.socket("http://oeildtcam.hanotaux.fr:8080/");
-        } catch (URISyntaxException e) {
-            e.getStackTrace();
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View tchat = inflater.inflate(R.layout.tchat, container, false);
+        NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancel(NOTIFICATION_ID);
         if (!getContext().getSharedPreferences("MyPref",MODE_PRIVATE).getString("Token","").equals("")) valid = true;
         edit = (EditText) tchat.findViewById(R.id.edit);
         send = (ImageButton) tchat.findViewById(R.id.send);
@@ -111,8 +106,11 @@ public class Tchat extends Fragment {
         uc = new UpdateChat();
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(uc, inF);
 
+        if (valid){
+            mSocket = SocketIO.getInstance().getSocket();
+        }
         if (valid)mSocket.on("message", onNewMessage);
-        if (valid)mSocket.connect();
+
         edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -158,7 +156,6 @@ public class Tchat extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(uc);
-        if (valid)mSocket.disconnect();
         if (valid)mSocket.off("message", onNewMessage);
     }
 
@@ -189,13 +186,6 @@ public class Tchat extends Fragment {
             this.color = color;
         }
     }
-    private class Users{
-        String color, id;
-        Users(String color, String id){
-            this.color = color;
-            this.id = id;
-        }
-    }
 
     private class MessageAdapter extends ArrayAdapter<Message> {
 
@@ -204,8 +194,9 @@ public class Tchat extends Fragment {
             super(context, 0, messages);
         }
 
+        @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.message, parent, false);
@@ -223,6 +214,7 @@ public class Tchat extends Fragment {
             //getItem(position) va récupérer l'item [position] de la List<Tweet> tweets
             Message message = getItem(position);
             //il ne reste plus qu'à remplir notre vue
+            assert message != null;
             if (message.id.equals(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId", ""))){
                 viewHolder.msg.setGravity(Gravity.RIGHT);
                 viewHolder.pseudo.setText(message.autor);
