@@ -41,7 +41,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -77,7 +80,10 @@ public class Tchat extends Fragment {
                         message =data.getString("msg");
                         id = data.getString("id");
                         colour = data.getString("color");
-                        list.add(new Message(username, message, id, colour));
+                        Date d = new Date();
+                        SimpleDateFormat f = new SimpleDateFormat("HH:mm");
+                        String s = f.format(d);
+                        list.add(new Message(username, message, id, colour,s));
                         adapter = new MessageAdapter(getContext(),list);
                         lv.setAdapter(adapter);
                         lv.setSelection(list.size()-1);
@@ -142,12 +148,16 @@ public class Tchat extends Fragment {
                     obj.put("token",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Token",""));
                     obj.put("id",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId",""));
                     obj.put("color",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserColor",""));
+                    Date d = new Date();
+                    SimpleDateFormat f = new SimpleDateFormat("HH:mm");
+                    String s = f.format(d);
                     if (valid && edit.getText().length() > 0) {
                         mSocket.emit("message", obj);
                         list.add(new Message(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", ""),
                                 edit.getText().toString(),
                                 getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId", ""),
-                                getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserColor", "")));
+                                getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserColor", ""),
+                                s));
 
                         adapter = new MessageAdapter(getContext(), list);
                         lv.setAdapter(adapter);
@@ -192,12 +202,13 @@ public class Tchat extends Fragment {
     }
 
     private class Message{
-        String msg, autor, id, color;
-        Message(String autor, String msg, String id, String color){
+        String msg, autor, id, color, date;
+        Message(String autor, String msg, String id, String color, String date){
             this.autor = autor;
             this.msg = msg;
             this.id = id;
             this.color = color;
+            this.date = date;
         }
     }
 
@@ -222,6 +233,7 @@ public class Tchat extends Fragment {
                 viewHolder.msg = (LinearLayout) convertView.findViewById(R.id.msg);
                 viewHolder.pseudo = (TextView) convertView.findViewById(R.id.pseudo);
                 viewHolder.text = (TextView) convertView.findViewById(R.id.sms);
+                viewHolder.date = (TextView) convertView.findViewById(R.id.date);
                 convertView.setTag(viewHolder);
             }
 
@@ -256,6 +268,7 @@ public class Tchat extends Fragment {
                     }
                 });
             }
+            viewHolder.date.setText(message.date);
             viewHolder.text.setText(message.msg);
 
 
@@ -265,6 +278,7 @@ public class Tchat extends Fragment {
             private TextView pseudo;
             private TextView text;
             private LinearLayout msg;
+            private TextView date;
 
         }
     }
@@ -283,7 +297,9 @@ public class Tchat extends Fragment {
                         String msg = list_obj.getJSONObject(i).getString("text");
                         String id = list_obj.getJSONObject(i).getJSONObject("user").getString("id");
                         String color = list_obj.getJSONObject(i).getJSONObject("user").getString("color");
-                        list.add(new Message(autor, msg, id, color));
+                        String date = list_obj.getJSONObject(i).getString("date");
+                        date = date.substring(date.length()-14,date.length()-9);
+                        list.add(new Message(autor, msg, id, color, date));
                     }
                     adapter = new MessageAdapter(getContext(),list);
                     lv.setAdapter(adapter);

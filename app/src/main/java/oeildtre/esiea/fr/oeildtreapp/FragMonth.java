@@ -81,7 +81,7 @@ public class FragMonth extends Fragment {
         final Calendar c = Calendar.getInstance();
         int mYear = c.get(Calendar.YEAR);
         int mMonth = c.get(Calendar.MONTH);
-        web = "/daily/data/month?month="+(mMonth+1)+"&year="+mYear;
+        web = "/dailydata/month?month="+(mMonth+1)+"&year="+mYear;
 
         final Button btn = (Button) month.findViewById(R.id.bdate);
         final TextView text = (TextView) month.findViewById(R.id.date);
