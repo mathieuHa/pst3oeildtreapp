@@ -1,5 +1,6 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -48,7 +49,7 @@ import static android.content.Context.MODE_PRIVATE;
  * Created by Max on 26/05/2017.
  */
 
-public class Option extends Fragment {
+public class Option extends Activity {
     private ImageView img;
     private EditText psw1, psw2;
     private LinearLayout param, color, password, password_layout, deco;
@@ -57,31 +58,34 @@ public class Option extends Fragment {
     private String couleur;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View option = inflater.inflate(R.layout.option, container, false);
-        back2 = (ImageButton) option.findViewById(R.id.back2);
-        param = (LinearLayout) option.findViewById(R.id.param);
-        color = (LinearLayout) option.findViewById(R.id.color);
-        password = (LinearLayout) option.findViewById(R.id.password);
-        password_layout = (LinearLayout) option.findViewById(R.id.password_layout);
-        psw1 = (EditText) option.findViewById(R.id.psw1);
-        psw2 = (EditText) option.findViewById(R.id.psw2);
-        push = (Button) option.findViewById(R.id.push);
-        deco = (LinearLayout) option.findViewById(R.id.deco);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Log.e("Ouverture","?");
+        setContentView(R.layout.option);
+        back2 = (ImageButton) findViewById(R.id.back2);
+        param = (LinearLayout) findViewById(R.id.param);
+        color = (LinearLayout) findViewById(R.id.color);
+        password = (LinearLayout) findViewById(R.id.password);
+        password_layout = (LinearLayout) findViewById(R.id.password_layout);
+        psw1 = (EditText) findViewById(R.id.psw1);
+        psw2 = (EditText) findViewById(R.id.psw2);
+        push = (Button) findViewById(R.id.push);
+        deco = (LinearLayout) findViewById(R.id.deco);
 
         paramVisible();
         color.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ColorPickerDialogBuilder
-                        .with(getContext())
+                        .with(getApplicationContext())
                         .setTitle("Choose color")
                         .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
                         .density(12)
                         .setOnColorSelectedListener(new OnColorSelectedListener() {
                             @Override
                             public void onColorSelected(int selectedColor) {
-                                Toast.makeText(getContext(), "onColorSelected: 0x" + Integer.toHexString(selectedColor), Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "onColorSelected: 0x" + Integer.toHexString(selectedColor), Toast.LENGTH_LONG).show();
                             }
                         })
                         .setPositiveButton("ok", new ColorPickerClickListener() {
@@ -129,7 +133,7 @@ public class Option extends Fragment {
             @Override
             public void onClick(View v) {
                 Dialog dialog;
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
 
                 builder.setMessage("Do you want to log out ?");
                 builder.setCancelable(false);
@@ -138,7 +142,7 @@ public class Option extends Fragment {
                 builder.setPositiveButton("Yes",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                SharedPreferences properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+                                SharedPreferences properties = getSharedPreferences("MyPref", MODE_PRIVATE);
                                 SharedPreferences.Editor editor = properties.edit();
                                 editor.putString("Token", "");
                                 editor.putString("UserId", "");
@@ -147,7 +151,7 @@ public class Option extends Fragment {
                                 editor.putString("Smail", "");
                                 editor.putString("Smdp", "");
                                 editor.commit();
-                                Toast.makeText(getContext(), "You're disconnected...", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "You're disconnected...", Toast.LENGTH_LONG).show();
                             }
                         });
 
@@ -162,9 +166,6 @@ public class Option extends Fragment {
                 dialog.show();
             }
         });
-
-
-        return option;
     }
     public String getPostDataString(JSONObject params) throws Exception {
 
@@ -194,6 +195,7 @@ public class Option extends Fragment {
     public void paramVisible() {
         param.setEnabled(true);
         param.setVisibility(View.VISIBLE);
+        param.bringToFront();
         password_layout.setEnabled(false);
         password_layout.setVisibility(View.INVISIBLE);
         back2.setEnabled(false);
@@ -220,7 +222,7 @@ public class Option extends Fragment {
 
             try {
                 //Init JSON and url de destination
-                URL url = new URL("https://oeildtapi.hanotaux.fr/api/users/"+getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId",""));
+                URL url = new URL("https://oeildtapi.hanotaux.fr/api/users/"+getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId",""));
                 //Init la connexion à l'API
                 HttpURLConnection connec = (HttpURLConnection) url.openConnection();
                 connec.setReadTimeout(15000);
@@ -252,7 +254,7 @@ public class Option extends Fragment {
                     }
                     result = sb.toString();
                     JSONObject resultat = new JSONObject(result);
-                    SharedPreferences properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+                    SharedPreferences properties = getSharedPreferences("MyPref", MODE_PRIVATE);
                     SharedPreferences.Editor editor = properties.edit();
                     editor.putString("UserColor", resultat.getString("color"));
                     editor.commit();
@@ -270,7 +272,7 @@ public class Option extends Fragment {
 
         @Override
         protected void onPostExecute(String result) {
-            Toast.makeText(getContext(), result, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
         }
     }
 }

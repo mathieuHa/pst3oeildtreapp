@@ -23,6 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Photo" />
+        <activity android:name=".Option" />
 
         <service
             android:name=".GraphService"

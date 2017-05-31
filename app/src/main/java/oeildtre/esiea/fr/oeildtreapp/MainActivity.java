@@ -17,9 +17,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -57,10 +60,30 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //ajoute les entrées de menu_test à l'ActionBar
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    //gère le click sur une action de l'ActionBar
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.action_settings:
+                Intent intent = new Intent(MainActivity.this, Option.class);
+                startActivity(intent);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},1);
         new SendSignInRequest().execute();
 
@@ -75,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         setupToolbar();
 
-        DataModel[] drawerItem = new DataModel[8];
+        DataModel[] drawerItem = new DataModel[7];
         drawerItem[0] = new DataModel(R.drawable.connect, "Connexion");
         drawerItem[1] = new DataModel(R.drawable.jour2, "Day");
         drawerItem[2] = new DataModel(R.drawable.mois2, "Month");
@@ -83,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
         drawerItem[4] = new DataModel(R.drawable.camera, "Camera");
         drawerItem[5] = new DataModel(R.drawable.medias, "Medias");
         drawerItem[6] = new DataModel(R.drawable.chat, "Chat");
-        drawerItem[7] = new DataModel(R.drawable.outils, "Option");
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
 
@@ -119,9 +141,6 @@ public class MainActivity extends AppCompatActivity {
             case 6:
                 fragment = new Tchat();
                 break;
-            case 7:
-                fragment = new Option();
-                break;
             default:
                 break;
         }
@@ -136,13 +155,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.e("MainActivity", "Error in creating fragment");
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
-
     }
 
     @Override
