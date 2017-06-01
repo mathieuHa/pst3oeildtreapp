@@ -2,13 +2,11 @@
 <resources>
     <string name="app_name">OeilDtreApp</string>
     <string-array name="navigation_drawer_items_array">
-        <item>Connexion</item>
+        <item>Chat</item>
         <item>Day</item>
         <item>Month</item>
         <item>Year</item>
         <item>Camera</item>
         <item>Medias</item>
-        <item>Chat</item>
-        <item>Option</item>
     </string-array>
 </resources>

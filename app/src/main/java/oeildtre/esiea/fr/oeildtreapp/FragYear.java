@@ -243,8 +243,10 @@ public class FragYear extends Fragment {
                 Log.v("Graph", graph);
                 final ImageView img = (ImageView) getActivity().findViewById(R.id.img);
                 Picasso.with(getActivity()).load(
-                        "http://chart.apis.google.com/chart?cht=lc&chs=400x250" +
-                                "&chd=t:"+graph+"&chl=time").into(img);
+                        "http://chart.apis.google.com/chart?cht=lc&chs=400x250&chxt=x,x,y&chxl=1:||Temps||0:|jan|mar|june|oct|dec" +
+                                "&chd=t:"+graph).into(img);
+                //http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:|0h|6h|12h|18h|24h&chd=t:"+
+                //graph+"&chs=400x250&chco=FF0000&chg=25,33,1,5"
             }
         }
     }

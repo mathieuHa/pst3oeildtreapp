@@ -73,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()){
+            case R.id.connexion:
+                fragmentManager.beginTransaction().replace(R.id.content_frame, new Connexion()).commit();
+                return true;
             case R.id.action_settings:
                 fragmentManager.beginTransaction().replace(R.id.content_frame, new Option()).commit();
                 return true;
@@ -98,14 +101,14 @@ public class MainActivity extends AppCompatActivity {
 
         setupToolbar();
 
-        DataModel[] drawerItem = new DataModel[7];
-        drawerItem[0] = new DataModel(R.drawable.connect, "Connexion");
+        DataModel[] drawerItem = new DataModel[6];
+        drawerItem[0] = new DataModel(R.drawable.chat, "Chat");
         drawerItem[1] = new DataModel(R.drawable.jour2, "Day");
         drawerItem[2] = new DataModel(R.drawable.mois2, "Month");
         drawerItem[3] = new DataModel(R.drawable.annee2, "Year");
         drawerItem[4] = new DataModel(R.drawable.camera, "Camera");
         drawerItem[5] = new DataModel(R.drawable.medias, "Medias");
-        drawerItem[6] = new DataModel(R.drawable.chat, "Chat");
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
 
@@ -121,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment = null;
         switch (position) {
             case 0:
-                fragment = new Connexion();
+                fragment = new Tchat();
                 break;
             case 1:
                 fragment = new FragDay();
@@ -137,9 +140,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case 5:
                 fragment = new Medias();
-                break;
-            case 6:
-                fragment = new Tchat();
                 break;
             default:
                 break;
