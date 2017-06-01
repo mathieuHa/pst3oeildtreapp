@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private CharSequence mTitle;
     private boolean valid = false;
+    private FragmentManager fragmentManager = getSupportFragmentManager();
 
 
     @Override
@@ -73,8 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()){
             case R.id.action_settings:
-                Intent intent = new Intent(MainActivity.this, Option.class);
-                startActivity(intent);
+                fragmentManager.beginTransaction().replace(R.id.content_frame, new Option()).commit();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -145,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         if (fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
             mDrawerList.setItemChecked(position, true);
