@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
 
@@ -56,7 +57,7 @@ public class Tchat extends Fragment {
     public static final String UPDATES_CHAT="UPDATES_CHAT";
     private UpdateChat uc;
     private boolean dl = false, valid = false;
-    private EditText edit;
+    private MultiAutoCompleteTextView edit;
     private ImageButton send;
     private ListView lv;
     private ArrayList<Message> list;
@@ -102,8 +103,11 @@ public class Tchat extends Fragment {
         View tchat = inflater.inflate(R.layout.tchat, container, false);
         NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(NOTIFICATION_ID);
-        if (!getContext().getSharedPreferences("MyPref",MODE_PRIVATE).getString("Token","").equals("")) valid = true;
-        edit = (EditText) tchat.findViewById(R.id.edit);
+        if (!getContext().getSharedPreferences("MyPref",MODE_PRIVATE).getString("Token","").equals("")){
+            Log.i("Valid","true");
+            valid = true;
+        }
+        edit = (MultiAutoCompleteTextView) tchat.findViewById(R.id.edit);
         send = (ImageButton) tchat.findViewById(R.id.send);
         lv = (ListView) tchat.findViewById(R.id.list);
         list = new ArrayList<>();
@@ -114,6 +118,7 @@ public class Tchat extends Fragment {
 
         if (valid){
             mSocket = SocketIO.getInstance().getSocket();
+            Log.e("Tchat","Marche ?");
         }
         if (valid)mSocket.on("message", onNewMessage);
         edit.setOnKeyListener(new View.OnKeyListener() {
@@ -152,6 +157,7 @@ public class Tchat extends Fragment {
                     SimpleDateFormat f = new SimpleDateFormat("HH:mm");
                     String s = f.format(d);
                     if (valid && edit.getText().length() > 0) {
+                        Log.e("edit","envoie de message");
                         mSocket.emit("message", obj);
                         list.add(new Message(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", ""),
                                 edit.getText().toString(),

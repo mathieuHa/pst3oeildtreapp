@@ -87,7 +87,7 @@ public class FragYear extends Fragment {
 
         final Calendar c = Calendar.getInstance();
         int mYear = c.get(Calendar.YEAR);
-        web = "/dailydata/year/year?year="+mYear;
+        web = "/dailydata/year?year="+mYear;
 
         temp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -230,20 +230,29 @@ public class FragYear extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
                 String graph="";
+                String abscisse="",str;
                 JSONArray list_data = getFromFile("sensors", "_data3");
                 Log.d("FY.UData", list_data.toString());
                 for(int i = 0; i< list_data.length(); i++){
                     try {
-                        if(i==0)graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
-                        else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        str = list_data.getJSONObject(i).getString("date");
+                        str = "|" + str.substring(5, 7);
+                        abscisse += str;
+
+
+                        if (i == 0)
+                            graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        else
+                            graph = graph + "," + String.valueOf(list_data.getJSONObject(i).getInt("value"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+                Log.i("Abscisse",abscisse+" "+graph.length());
                 Log.v("Graph", graph);
                 final ImageView img = (ImageView) getActivity().findViewById(R.id.img);
                 Picasso.with(getActivity()).load(
-                        "http://chart.apis.google.com/chart?cht=lc&chs=400x250&chxt=x,x,y&chxl=1:||Temps||0:|jan|mar|june|oct|dec" +
+                        "http://chart.apis.google.com/chart?cht=lc&chs=400x250&chxt=x,x,y&chxl=1:||Temps||0:"+abscisse+
                                 "&chd=t:"+graph).into(img);
                 //http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:|0h|6h|12h|18h|24h&chd=t:"+
                 //graph+"&chs=400x250&chco=FF0000&chg=25,33,1,5"

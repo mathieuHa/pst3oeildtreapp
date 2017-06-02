@@ -17,7 +17,7 @@ public class SocketIO {
 
     {
         try {
-            mSocket = IO.socket("http://oeildtcam.hanotaux.fr:8080/");
+            mSocket = IO.socket("https://oeildtcam.hanotaux.fr:8080/");
         } catch (URISyntaxException e) {
             e.getStackTrace();
         }

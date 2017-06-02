@@ -228,10 +228,16 @@ public class FragMonth extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
                 String graph="", graphMax="", graphMin="";
+                String abscisse="",str;
                 JSONArray list_data = getFromFile("sensors", "_data2");
                 Log.d("FM.UData", list_data.toString());
                 for(int i = 0; i< list_data.length(); i++){
                     try {
+                        if (0 == i%(list_data.length()/2)) {
+                            str = list_data.getJSONObject(i).getString("date");
+                            str = "|" + str.substring(8,10);
+                            abscisse += str;
+                        }
                         if(i==0)graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
                         else graph = graph+","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
                         if(i==0)graphMax = String.valueOf(list_data.getJSONObject(i).getInt("max"));
@@ -242,10 +248,11 @@ public class FragMonth extends Fragment {
                         e.printStackTrace();
                     }
                 }
-                Log.v("Graph", graph);
+                Log.i("Abscisse",abscisse+" "+graph.length());
+                Log.i("Graph", graph);
                 final ImageView img = (ImageView) getActivity().findViewById(R.id.img);
                 Picasso.with(getActivity()).load(
-                        "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:|1j|8j|16j|24j|31j&chd=t:"+
+                        "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:"+abscisse+"&chd=t:"+
                                 graph+"|"+graphMax+"|"+graphMin+"&chs=400x250&chco=FF0000,FFFF00,00FFFF&chg=25,33,1,5").into(img);
             }
         }

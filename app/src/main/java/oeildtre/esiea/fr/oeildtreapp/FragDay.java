@@ -226,25 +226,32 @@ public class FragDay extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
                 String graph="";
+                String abscisse = "", str;
                 JSONArray list_data = getFromFile("sensors", "_data1");
                 Log.d("FD.Data", list_data.toString());
-                for(int i = 0; i<24*2;i++){
+                for(int i = 0; i<list_data.length();i++){
                     try {
-                        if (i> list_data.length()) graph += ",0";
-                        else {
-                            if(i==0) graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
-                            else graph += ","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        if (0 == i%(list_data.length()/5)) {
+                            str = list_data.getJSONObject(i).getString("date");
+                            str = "|" + str.substring(str.length()-14,str.length()-12) + "h";
+                            abscisse += str;
+
                         }
+                        if(i==0) graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
+                        else if (i%10==0 || Math.abs(list_data.getJSONObject(i).getInt("value") - list_data.getJSONObject(i-1).getInt("value")) > 20)
+                            graph += ","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+                Log.i("Abscisse",abscisse+" "+graph.length());
                 Log.i("Graph", graph);
                 final ImageView img = (ImageView) getActivity().findViewById(R.id.img);
                 Picasso.with(getActivity()).load(
                         //"http://chart.apis.google.com/chart?cht=lc&chs=300x150" +
                               //  "&chd=t:"+graph+"&chl=time").into(img);
-                "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:|0h|6h|12h|18h|24h&chd=t:"+
+                "http://chart.apis.google.com/chart?cht=lc&chxt=x,x,y&chxl=1:||Temps||0:"+abscisse+"&chd=t:"+
                         graph+"&chs=400x250&chco=FF0000&chg=25,33,1,5"/*&chxs=0,0000dd,10|1,0000dd,12,0"*/).into(img);
             }
         }
