@@ -51,10 +51,12 @@ public class MyService extends Service {
 
                 if (!username.equals(getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", "")) && !username.equals("Server")) {
                     notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
-                    Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                    v.vibrate(500);
-                    ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
-                    toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
+                    if (!getBaseContext().getSharedPreferences("MyPref",MODE_PRIVATE).getString("Vibreur","").equals("N")) {
+                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        v.vibrate(500);
+                        ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
+                        toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

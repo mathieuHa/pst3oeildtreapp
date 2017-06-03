@@ -1,6 +1,5 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -40,14 +39,11 @@ import java.util.Iterator;
 
 import static android.content.Context.MODE_PRIVATE;
 
-/**
- * Created by Max on 26/05/2017.
- */
 
 public class Option extends Fragment {
     private ImageView img;
     private EditText psw1, psw2;
-    private LinearLayout param, color, password, password_layout, deco;
+    private LinearLayout param, color, password, vibreur, password_layout, deco;
     private ImageButton back2;
     private Button push;
     private String couleur;
@@ -61,6 +57,7 @@ public class Option extends Fragment {
         color = (LinearLayout) option.findViewById(R.id.color);
         password = (LinearLayout) option.findViewById(R.id.password);
         password_layout = (LinearLayout) option.findViewById(R.id.password_layout);
+        vibreur = (LinearLayout) option.findViewById(R.id.vibreur);
         psw1 = (EditText) option.findViewById(R.id.psw1);
         psw2 = (EditText) option.findViewById(R.id.psw2);
         push = (Button) option.findViewById(R.id.push);
@@ -152,6 +149,39 @@ public class Option extends Fragment {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
+                            }
+                        });
+
+                dialog = builder.create();
+                dialog.show();
+            }
+        });
+        vibreur.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Dialog dialog;
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setMessage("Enable vibrator ?");
+                builder.setCancelable(false);
+                //builder.setTitle("Confirmation");
+
+                builder.setPositiveButton("Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                SharedPreferences properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = properties.edit();
+                                editor.putString("Vibreur", "Y");
+                                editor.commit();
+                            }
+                        });
+
+                builder.setNegativeButton("No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                SharedPreferences properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = properties.edit();
+                                editor.putString("Vibreur", "N");
+                                editor.commit();
                             }
                         });
 

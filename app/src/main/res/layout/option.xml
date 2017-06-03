@@ -12,6 +12,31 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/vibreur"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="Enable/Disable vibrator"
+                android:textAppearance="@style/TextAppearance.AppCompat.Button" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                app:srcCompat="@android:drawable/ic_media_next" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
