@@ -1,5 +1,6 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -236,6 +237,8 @@ public class Connexion extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             Toast.makeText(getContext(), result, Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(getContext(), MyService.class);
+            getContext().startService(intent);
         }
     }
 

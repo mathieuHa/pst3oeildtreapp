@@ -2,24 +2,16 @@ package oeildtre.esiea.fr.oeildtreapp;
 
 
 import android.Manifest;
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -29,10 +21,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,7 +29,6 @@ import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Iterator;
@@ -56,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private CharSequence mTitle;
-    private boolean valid = false;
     private FragmentManager fragmentManager = getSupportFragmentManager();
 
 
@@ -269,18 +255,16 @@ public class MainActivity extends AppCompatActivity {
                     Log.e("token", result);
                     in.close();
                     JSONObject resultat = new JSONObject(result);
-                    if (resultat != null) {
 
 //Initialise tes préférences
-                        SharedPreferences Properties = getSharedPreferences("MyPref", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = Properties.edit();
-                        editor.putString("Token", resultat.getString("value"));
-                        editor.putString("UserId", resultat.getJSONObject("user").getString("id"));
-                        editor.putString("Sname", resultat.getJSONObject("user").getString("login"));
-                        editor.putString("UserColor", resultat.getJSONObject("user").getString("color"));
+                    SharedPreferences Properties = getSharedPreferences("MyPref", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = Properties.edit();
+                    editor.putString("Token", resultat.getString("value"));
+                    editor.putString("UserId", resultat.getJSONObject("user").getString("id"));
+                    editor.putString("Sname", resultat.getJSONObject("user").getString("login"));
+                    editor.putString("UserColor", resultat.getJSONObject("user").getString("color"));
 
-                        editor.commit();
-                    }
+                    editor.commit();
                     return "You're connected as " + getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", "");
                 } else {
                     return connec.getResponseMessage();
