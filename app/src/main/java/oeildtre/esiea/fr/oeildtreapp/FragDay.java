@@ -231,14 +231,14 @@ public class FragDay extends Fragment {
                 Log.d("FD.Data", list_data.toString());
                 for(int i = 0; i<list_data.length();i++){
                     try {
-                        if (0 == i%(list_data.length()/5)) {
+                        if (0 == i%((list_data.length()-1)/5)) {
                             str = list_data.getJSONObject(i).getString("date");
                             str = "|" + str.substring(str.length()-14,str.length()-12) + "h";
                             abscisse += str;
 
                         }
                         if(i==0) graph = String.valueOf(list_data.getJSONObject(i).getInt("value"));
-                        else if (i%10==0 || Math.abs(list_data.getJSONObject(i).getInt("value") - list_data.getJSONObject(i-1).getInt("value")) > 20)
+                        if (i%10==0 || Math.abs(list_data.getJSONObject(i).getInt("value") - list_data.getJSONObject(i-1).getInt("value")) > 20)
                             graph += ","+String.valueOf(list_data.getJSONObject(i).getInt("value"));
 
                     } catch (JSONException e) {

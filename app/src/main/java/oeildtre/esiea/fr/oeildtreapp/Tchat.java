@@ -85,8 +85,7 @@ public class Tchat extends Fragment {
                         SimpleDateFormat f = new SimpleDateFormat("HH:mm");
                         String s = f.format(d);
                         list.add(new Message(username, message, id, colour,s));
-                        adapter = new MessageAdapter(getContext(),list);
-                        lv.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                         lv.setSelection(list.size()-1);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -158,15 +157,18 @@ public class Tchat extends Fragment {
                     String s = f.format(d);
                     if (valid && edit.getText().length() > 0) {
                         Log.e("edit","envoie de message");
-                        mSocket.emit("message", obj);
+                        mSocket.emit("message", obj.toString());
                         list.add(new Message(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", ""),
                                 edit.getText().toString(),
                                 getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId", ""),
                                 getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserColor", ""),
                                 s));
 
-                        adapter = new MessageAdapter(getContext(), list);
-                        lv.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+
+                        adapter.getView(list.size()-1, null, lv).setAlpha(0);
+                        adapter.getView(list.size()-1, null, lv).animate().setDuration(500).alpha(1);
+
                         lv.setSelection(list.size() - 1);
                         edit.requestFocus();
                         edit.setText("");
@@ -237,6 +239,8 @@ public class Tchat extends Fragment {
             if (viewHolder == null) {
                 viewHolder = new TweetViewHolder();
                 viewHolder.msg = (LinearLayout) convertView.findViewById(R.id.msg);
+                viewHolder.msg.setAlpha(0);
+                viewHolder.msg.animate().setDuration(400).alpha(1);
                 viewHolder.pseudo = (TextView) convertView.findViewById(R.id.pseudo);
                 viewHolder.text = (TextView) convertView.findViewById(R.id.sms);
                 viewHolder.date = (TextView) convertView.findViewById(R.id.date);

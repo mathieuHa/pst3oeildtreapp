@@ -1,28 +1,38 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
-import android.content.Context;
+
+
+import android.util.Log;
+
 
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
 import java.net.URISyntaxException;
-
-/**
- * Created by Max on 28/05/2017.
- */
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import javax.net.ssl.SSLContext;
 
 public class SocketIO {
     private static SocketIO INSTANCE = null;
     private Socket mSocket;
 
-    {
+    private SocketIO() {
         try {
-            mSocket = IO.socket("https://oeildtcam.hanotaux.fr:8080/");
+            SSLContext sc = SSLContext.getInstance("TLS");
+            sc.init(null, null, null);
+            IO.setDefaultSSLContext(sc);
+            IO.Options opts = new IO.Options();
+            opts.secure = true;
+            opts.sslContext = sc;
+            mSocket = IO.socket("https://oeildtcam.hanotaux.fr:8080/", opts);
+            Log.e("Socket.io","Marche bordel de merde");
         } catch (URISyntaxException e) {
             e.getStackTrace();
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            e.printStackTrace();
         }
-    }
-    private SocketIO() {
+
         mSocket.connect();
     }
 
