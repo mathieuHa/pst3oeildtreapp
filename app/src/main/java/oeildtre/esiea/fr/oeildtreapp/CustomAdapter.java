@@ -27,8 +27,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.github.chrisbanes.photoview.PhotoView;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -40,6 +38,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.os.Environment.DIRECTORY_PICTURES;
@@ -122,8 +123,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
                     Socket mSocket;
                     {
                         try {
-                            mSocket = IO.socket("http://oeildtcam.hanotaux.fr:8080/");
-                            mSocket.connect();
+                            mSocket = SocketIO.getInstance().getSocket();
                             JSONObject obj = new JSONObject();
                             obj.put("autor",chat.getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname",""));
                             obj.put("msg",mDataSet2.get(getAdapterPosition()).getImageUrlTh());
@@ -132,8 +132,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
                             obj.put("color",chat.getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserColor",""));
                             mSocket.emit("message",obj);
                             mSocket.disconnect();
-                        } catch (URISyntaxException e) {
-                            e.getStackTrace();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

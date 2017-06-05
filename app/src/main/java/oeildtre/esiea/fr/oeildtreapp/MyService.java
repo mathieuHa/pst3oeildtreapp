@@ -1,6 +1,5 @@
 package oeildtre.esiea.fr.oeildtreapp;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -10,24 +9,21 @@ import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.IBinder;
 import android.os.Vibrator;
-import android.support.annotation.IntDef;
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URISyntaxException;
+
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 import static android.app.PendingIntent.FLAG_ONE_SHOT;
 
 public class MyService extends Service {
     public static final int NOTIFICATION_ID= 99999;
+    public static final int NOTIFICATION_ID_WRITING = 99999;
     private Socket mSocket;
     private NotificationManager notificationManager;
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
@@ -53,7 +49,7 @@ public class MyService extends Service {
                     notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
                     if (!getBaseContext().getSharedPreferences("MyPref",MODE_PRIVATE).getString("Vibreur","").equals("N")) {
                         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                        v.vibrate(500);
+                        v.vibrate(300);
                         ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
                         toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
                     }
@@ -74,7 +70,7 @@ public class MyService extends Service {
 
                 notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 final Intent in = new Intent(getApplicationContext(),MainActivity.class);
-                final PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, in, FLAG_ONE_SHOT);
+                final PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID_WRITING, in, FLAG_ONE_SHOT);
 
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getBaseContext())
                         .setSmallIcon(R.drawable.logo_round)

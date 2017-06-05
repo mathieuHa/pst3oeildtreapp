@@ -22,7 +22,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -30,9 +29,6 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
 
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,16 +37,18 @@ import org.json.JSONObject;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static oeildtre.esiea.fr.oeildtreapp.MyService.NOTIFICATION_ID;
+import static oeildtre.esiea.fr.oeildtreapp.MyService.NOTIFICATION_ID_WRITING;
 
 
 public class Tchat extends Fragment {
@@ -71,6 +69,7 @@ public class Tchat extends Fragment {
                     try {
                         NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(NOTIFICATION_SERVICE);
                         notificationManager.cancel(NOTIFICATION_ID);
+                        notificationManager.cancel(NOTIFICATION_ID_WRITING);
                         Log.i("Message" , args[0].toString());
                         JSONObject data = new JSONObject(args[0].toString());
                         String username;
@@ -117,7 +116,7 @@ public class Tchat extends Fragment {
 
         if (valid){
             mSocket = SocketIO.getInstance().getSocket();
-            Log.e("Tchat","Marche ?");
+            Log.e("Tchat",mSocket.toString());
         }
         if (valid)mSocket.on("message", onNewMessage);
         edit.setOnKeyListener(new View.OnKeyListener() {
@@ -249,6 +248,10 @@ public class Tchat extends Fragment {
 
             //getItem(position) va récupérer l'item [position] de la List<Tweet> tweets
             Message message = getItem(position);
+            if (position == list.size()-1){
+                viewHolder.msg.setAlpha(0);
+                viewHolder.msg.animate().setDuration(500).alpha(1);
+            }
             //il ne reste plus qu'à remplir notre vue
             assert message != null;
             if (message.id.equals(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId", ""))){
@@ -271,7 +274,10 @@ public class Tchat extends Fragment {
                 viewHolder.text.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String url = finalViewHolder.text.getText().toString();
+                        String str = finalViewHolder.text.getText().toString();
+                        if(!finalViewHolder.text.getText().toString().contains("http"))
+                            str = "http://"+finalViewHolder.text.getText().toString();
+                        String url = str;
                         Intent i = new Intent(Intent.ACTION_VIEW);
                         i.setData(Uri.parse(url));
                         startActivity(i);
