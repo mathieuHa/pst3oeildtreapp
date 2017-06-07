@@ -18,8 +18,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Objects;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -119,19 +117,18 @@ public class GraphService extends IntentService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        switch (param2) {
-            case "day":
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_SENSORS1));
-                break;
-            case "month":
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragMonth.UPDATES_SENSOR2));
-                break;
-            case "year":
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_SENSOR3));
-                break;
-            default:
-                Log.e("Raté", param2);
-                break;
+        if (param2.equals("day")) {
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_SENSORS1));
+
+        } else if (param2.equals("month")) {
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragMonth.UPDATES_SENSOR2));
+
+        } else if (param2.equals("year")) {
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_SENSOR3));
+
+        } else {
+            Log.e("Raté", param2);
+
         }
     }
 
@@ -171,16 +168,15 @@ public class GraphService extends IntentService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        switch (param1) {
-            case "1":
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_DATA1));
-                break;
-            case "2":
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragMonth.UPDATES_DATA2));
-                break;
-            case "3":
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_DATA3));
-                break;
+        if (param1.equals("1")) {
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragDay.UPDATES_DATA1));
+
+        } else if (param1.equals("2")) {
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragMonth.UPDATES_DATA2));
+
+        } else if (param1.equals("3")) {
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(FragYear.UPDATES_DATA3));
+
         }
 
     }
@@ -198,11 +194,10 @@ public class GraphService extends IntentService {
             if (HttpsURLConnection.HTTP_OK == connection.getResponseCode()) {
                 copyInputStreamToFile(connection.getInputStream(), new File(getCacheDir(), "/" + param2 + ".json"));
                 Log.d("Max", param2 + " DL");
-                switch (param2) {
-                    default:
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Medias.UPDATES_IMAGES));break;
-                    case "messages":
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Tchat.UPDATES_CHAT));break;
+                if (param2.equals("messages")) {
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Tchat.UPDATES_CHAT));
+                } else {
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Medias.UPDATES_IMAGES));
                 }
             }
         } catch (IOException e) {

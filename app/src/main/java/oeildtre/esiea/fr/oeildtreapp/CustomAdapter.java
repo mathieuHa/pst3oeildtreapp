@@ -181,8 +181,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             });
         }
         private void sendSMS(String phoneNumber, String message) {
-            ArrayList<PendingIntent> sentPendingIntents = new ArrayList<>();
-            ArrayList<PendingIntent> deliveredPendingIntents = new ArrayList<>();
+            ArrayList<PendingIntent> sentPendingIntents = new ArrayList<PendingIntent>();
+            ArrayList<PendingIntent> deliveredPendingIntents = new ArrayList<PendingIntent>();
             try {
                 SmsManager sms = SmsManager.getDefault();
                 ArrayList<String> mSMSMessage = sms.divideMessage(message);

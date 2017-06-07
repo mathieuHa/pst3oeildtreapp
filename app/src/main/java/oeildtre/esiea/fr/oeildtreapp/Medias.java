@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class Medias extends Fragment {
     protected RecyclerView mRecyclerView;
     protected CustomAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
-    private List<ItemRecyclerView> item = new ArrayList<>();
+    private List<ItemRecyclerView> item = new ArrayList<ItemRecyclerView>();
     private GraphService gs = new GraphService();
     private UpdateImages ui;
     private RadioButton my,all;
@@ -146,7 +147,9 @@ public class Medias extends Fragment {
             String text=new String(buffer);
             return new JSONArray(text);
 
-        } catch (IOException | JSONException e) {
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         }
         return new JSONArray();
