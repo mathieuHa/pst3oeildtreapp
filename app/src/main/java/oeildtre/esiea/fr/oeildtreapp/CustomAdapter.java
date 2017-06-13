@@ -10,8 +10,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.SmsManager;
@@ -27,7 +29,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.github.chrisbanes.photoview.PhotoView;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,10 +43,10 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
-import io.socket.client.IO;
-import io.socket.client.Socket;
 
+import static android.content.Context.MODE_APPEND;
 import static android.content.Context.MODE_PRIVATE;
 import static android.os.Environment.DIRECTORY_PICTURES;
 
@@ -103,7 +108,44 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
                     Log.d(TAG, "Element " + getAdapterPosition() + " clicked.");
                 }
             });
+            final Target img = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap finalBitmap, Picasso.LoadedFrom from) {
+                    String root = Environment.getExternalStoragePublicDirectory(DIRECTORY_PICTURES).toString();
+                    File myDir = new File(root+"/oeildt");
+                    myDir.mkdirs();
+                    Random generator = new Random();
+                    int n = 10000;
+                    n = generator.nextInt(n);
+                    String fname = "image_" + n + ".jpg";
 
+                    //Log.e("MediaStore" , MediaStore.Images.Media.insertImage(imageView.getContext().getContentResolver(),((BitmapDrawable)imageView.getDrawable()).getBitmap(), fname,"none"));
+                    Log.e("Save",myDir+"/"+fname);
+                    File file = new File(myDir, fname);
+                    try {
+                        if (file.exists()) file.delete();
+                        //file.createNewFile();
+                        FileOutputStream out = new FileOutputStream(file);
+                        finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                        out.flush();
+                        out.close();
+                        Log.e("Picture", "Download !");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e("Enregistrement",e.getCause().toString());
+                    }
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                }
+            };
             textView = (TextView) v.findViewById(R.id.textView);
             imageView = (PhotoView) v.findViewById(R.id.img);
             send = (ImageView) v.findViewById(R.id.send);
@@ -123,7 +165,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
                     Socket mSocket;
                     {
                         try {
-                            mSocket = SocketIO.getInstance().getSocket();
+                            mSocket = IO.socket("http://oeildtcam.hanotaux.fr:8080");
+                            mSocket.connect();
                             JSONObject obj = new JSONObject();
                             obj.put("autor",chat.getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname",""));
                             obj.put("msg",mDataSet2.get(getAdapterPosition()).getImageUrlTh());
@@ -132,7 +175,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
                             obj.put("color",chat.getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserColor",""));
                             mSocket.emit("message",obj);
                             mSocket.disconnect();
-                        } catch (JSONException e) {
+                        } catch (JSONException | URISyntaxException e) {
                             e.printStackTrace();
                         }
 
@@ -142,9 +185,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             dl.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new DownloadFiles().execute();
-                }
-            });
+                    Picasso.with(imageView.getContext()).load(mDataSet2.get(getAdapterPosition()).getImageUrlTh()).into(img);}//new DownloadFiles().execute();
+                });
             send.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -199,37 +241,5 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         PhotoView getImageView() {
             return imageView;
         }
-
-        ImageView getSend() { return send; }
-
-        private class DownloadFiles extends AsyncTask<String, Void, String> {
-            @Override
-            protected String doInBackground(String... params) {
-                BitmapDrawable bitmapDrawable = ((BitmapDrawable)imageView.getDrawable());
-                Bitmap finalBitmap = bitmapDrawable .getBitmap();
-                String root = Environment.getExternalStoragePublicDirectory(DIRECTORY_PICTURES).toString();
-                File myDir = new File(root+"/oeildt");
-                myDir.mkdirs();
-                Random generator = new Random();
-                int n = 10000;
-                n = generator.nextInt(n);
-                String fname = "image_" + n + ".jpg";
-                Log.e("Save",myDir+"/"+fname);
-                File file = new File(myDir, fname);
-                try {
-                    if (file.exists()) file.delete();
-                    //file.createNewFile();
-                    FileOutputStream out = new FileOutputStream(file);
-                    finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-                    out.flush();
-                    out.close();
-                    Log.e("Picture", "Download !");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        }
-
     }
 }

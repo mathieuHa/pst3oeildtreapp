@@ -9,13 +9,13 @@ import android.widget.ImageButton;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
+import com.github.nkzawa.socketio.client.Socket;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import io.socket.client.Socket;
 
 public class Reply extends Activity{
     private MultiAutoCompleteTextView edit;
@@ -28,7 +28,7 @@ public class Reply extends Activity{
         setContentView(R.layout.reply);
         edit = (MultiAutoCompleteTextView) findViewById(R.id.edit);
         send = (ImageButton) findViewById(R.id.send);
-        mSocket = SocketIO.getInstance().getSocket();
+       // mSocket = SocketIO.getInstance().getSocket();
             Log.e("Tchat",mSocket.toString());
         edit.setOnKeyListener(new View.OnKeyListener() {
             @Override

@@ -15,12 +15,16 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 
-import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
+import java.net.URISyntaxException;
+
 
 import static android.app.PendingIntent.FLAG_ONE_SHOT;
 
@@ -31,6 +35,14 @@ public class MyService extends Service {
     String username,message;
     private Socket mSocket;
     private NotificationManager notificationManager;
+
+    {
+        try {
+            mSocket = IO.socket("http://oeildtcam.hanotaux.fr:8080");
+        } catch (URISyntaxException e) {
+            e.getStackTrace();
+        }
+    }
     /*private Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -75,39 +87,13 @@ public class MyService extends Service {
             }
         }
     };*/
-    private Emitter.Listener onWriting = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            try {
-                Log.i("MyService", args[0].toString());
-                JSONObject data = new JSONObject(args[0].toString());
-                username = data.getString("autor");
-                message = data.getString("msg");
-                final Intent in = new Intent(getApplicationContext(),MainActivity.class);
-                final PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID_WRITING, in, FLAG_ONE_SHOT);
-
-                NotificationCompat.Builder mBuilder= new NotificationCompat.Builder(getApplicationContext())
-                        .setSmallIcon(R.drawable.logo_round)
-                        .setContentTitle(getString(R.string.app_name))
-                        .setContentText(username + " : " + message)
-                        .setContentIntent(pendingIntent);
-                if (!username.equals(getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", "")) && !username.equals("Server")) {
-                    notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                    notificationManager.notify(NOTIFICATION_ID_WRITING, mBuilder.build());
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mSocket = SocketIO.getInstance().getSocket();
+        mSocket.connect();
         //mSocket.on("message", onNewMessage);
-        mSocket.on("writing", onWriting);
+
     }
 
     @Override

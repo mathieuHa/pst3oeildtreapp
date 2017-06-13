@@ -32,8 +32,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.1'
     compile 'com.squareup.picasso:picasso:2.5.0'
-    compile ('io.socket:socket.io-client:0.8.3') {
-        exclude group: 'org.json', module: 'json' }
+    compile 'com.github.nkzawa:socket.io-client:0.3.0'
     compile 'com.github.QuadFlask:colorpicker:0.0.13'
     compile 'com.github.chrisbanes:PhotoView:2.0.0'
 

@@ -4,6 +4,7 @@ package oeildtre.esiea.fr.oeildtreapp;
 
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -30,35 +33,27 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
 
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-
-import io.socket.client.IO;
-import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static oeildtre.esiea.fr.oeildtreapp.MyService.NOTIFICATION_ID;
-import static oeildtre.esiea.fr.oeildtreapp.MyService.NOTIFICATION_ID_WRITING;
 
 
 public class Tchat extends Fragment {
@@ -70,40 +65,71 @@ public class Tchat extends Fragment {
     private ImageButton send;
     private boolean anim = true;
     private ListView lv;
+    private TextView typing;
     private ArrayList<Message> list;
     private MessageAdapter adapter;
+    private Emitter.Listener onWriting = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            try {
+                JSONObject data = new JSONObject((String)args[0]);
+                String autor = data.getString("autor");
+                String msg = data.getString("msg");
+                String id = data.getString("id");
+                if (!id.equals(getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserID", ""))) {
+                    isTyping(autor +" "+ msg, true);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    isTyping("", false);
+                    JSONObject data = null;
                     try {
-                        NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(NOTIFICATION_SERVICE);
-                        notificationManager.cancel(NOTIFICATION_ID);
-                        notificationManager.cancel(NOTIFICATION_ID_WRITING);
-                        Log.i("Reception", args[0].toString());
-                        JSONObject data = (JSONObject)args[0];
-                        String username = data.getString("autor");
-                        String message = data.getString("msg");
-                        String id = data.getString("id");
-                        String colour = data.getString("color");
+                        Log.e("Args 0", args[0].toString());
+                        data = new JSONObject((String)args[0]);
+                        String autor,msg,color,id;
                         Date d = new Date();
                         SimpleDateFormat f = new SimpleDateFormat("HH:mm");
                         String s = f.format(d);
-                        list.add(new Message(username, message, id, colour, s));
+                        autor = data.getString("autor");
+                        msg = data.getString("msg");
+                        id = data.getString("id");
+                        color = data.getString("color");
+
+                        // add the message to view
+                        list.add(new Message(autor,msg,id,color,s));
                         anim = true;
                         adapter.notifyDataSetChanged();
                         lv.setSelection(list.size() - 1);
+
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        e.getStackTrace();
                     }
+
+
+
                 }
             });
         }
     };
 
     private Socket mSocket;
+    {
+        try {
+            mSocket = IO.socket("http://oeildtcam.hanotaux.fr:8080");
+        } catch (URISyntaxException e) {
+            e.getStackTrace();
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -112,6 +138,9 @@ public class Tchat extends Fragment {
         notificationManager.cancel(NOTIFICATION_ID);
         edit = (MultiAutoCompleteTextView) tchat.findViewById(R.id.edit);
         send = (ImageButton) tchat.findViewById(R.id.send);
+        typing = (TextView) tchat.findViewById(R.id.typing);
+        typing.setText("");
+        typing.setVisibility(View.INVISIBLE);
         lv = (ListView) tchat.findViewById(R.id.list);
         list = new ArrayList<Message>();
         GraphService.startActionBaz2(getContext(), "chat/", "messages");
@@ -119,25 +148,44 @@ public class Tchat extends Fragment {
         uc = new UpdateChat();
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(uc, inF);
 
-        mSocket = SocketIO.getInstance().getSocket();
-        mSocket.on("message", onNewMessage);
-        Log.e("Tchat", mSocket.toString());
+        mSocket.on("writing",onWriting);
+        mSocket.on("message",onNewMessage);
+        mSocket.connect();
 
-        edit.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
 
+        edit.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                /*This method is called to notify you that, within s, the count characters beginning at start are about to be replaced by new text with length after. It is an error to attempt to make changes to s from this callback.*/
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 try {
                     JSONObject obj = new JSONObject();
                     obj.put("autor", getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", ""));
-                    if (edit.getText().length() > 5) mSocket.emit("writing", obj);
+                    obj.put("msg","is typing...");
+                    obj.put("id",getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId", ""));
+                    if (edit.getText().length()>2)mSocket.emit("writing", obj.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-                return false;
             }
         });
+        /*edit.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                try {
+                    JSONObject obj = new JSONObject();
+                    obj.put("autor", getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", ""));
+                    mSocket.emit("writing", obj);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+        });*/
         edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -213,6 +261,18 @@ public class Tchat extends Fragment {
         return new JSONArray();
     }
 
+    private void isTyping(final String msg, final boolean put){
+        getActivity().runOnUiThread (new Thread(new Runnable() {
+            public void run() {
+                typing.bringToFront();
+                typing.setText(msg);
+                if (put) typing.setVisibility(View.VISIBLE);
+                else typing.setVisibility(View.INVISIBLE);
+            }
+        }));
+
+    }
+
     private class Message {
         String msg, autor, id, color, date;
 
@@ -273,7 +333,7 @@ public class Tchat extends Fragment {
                 if (message.color.contains("#"))
                     viewHolder.pseudo.setTextColor(Color.parseColor(message.color));//Integer.valueOf(message.color));
             }
-            viewHolder.text.setTextColor(Color.DKGRAY);
+            viewHolder.text.setTextColor(Color.GRAY);
             viewHolder.text.setOnClickListener(null);
             viewHolder.text.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
             if (message.msg.contains(".jpg") || message.msg.contains(".com") || message.msg.contains(".fr")) {
