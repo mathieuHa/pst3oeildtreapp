@@ -334,7 +334,7 @@ public class Tchat extends Fragment {
             viewHolder.text.setTextColor(Color.GRAY);
             viewHolder.text.setOnClickListener(null);
             viewHolder.text.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
-            if ((message.msg.contains(".jpg") || message.msg.contains(".com") || message.msg.contains(".fr")) && message.msg.contains("www")) {
+            if ((message.msg.contains(".jpg") || message.msg.contains(".com") || message.msg.contains(".fr"))) {
                 viewHolder.text.setTextColor(Color.parseColor("#8be2ff"));
                 viewHolder.text.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
                 final TweetViewHolder finalViewHolder = viewHolder;

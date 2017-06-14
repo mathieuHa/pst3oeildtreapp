@@ -74,7 +74,7 @@ public class MyService extends Service {
 
                     // Add to your action, enabling Direct reply for it
                     NotificationCompat.Action action =
-                            new NotificationCompat.Action.Builder(R.drawable.logo_round, replyLabel, resultPendingIntent)
+                            new NotificationCompat.Action.Builder(R.drawable.logo_mini, replyLabel, resultPendingIntent)
                                     .addRemoteInput(remoteInput)
                                     .setAllowGeneratedReplies(true)
                                     .build();
