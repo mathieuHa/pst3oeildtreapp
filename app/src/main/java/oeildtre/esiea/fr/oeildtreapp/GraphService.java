@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -39,6 +40,7 @@ public class GraphService extends IntentService {
     private static final String stream = "http://mathieuhanotaux.ddns.net";
     private static final String api = "https://oeildtapi.hanotaux.fr/api";
     private static final String media = "https://oeildtmedia.hanotaux.fr";
+    private static final String chat = "https://oeildtcam.hanotaux.fr:8080";
 
 
     public GraphService() {
@@ -76,6 +78,7 @@ public class GraphService extends IntentService {
     public static String getMedia() {
         return media;
     }
+    public static String getChat() {return chat;}
 
     @Override
     protected void onHandleIntent(Intent intent) {

@@ -165,7 +165,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
                     Socket mSocket;
                     {
                         try {
-                            mSocket = IO.socket("http://oeildtcam.hanotaux.fr:8080");
+                            mSocket = IO.socket(GraphService.getChat());
                             mSocket.connect();
                             JSONObject obj = new JSONObject();
                             obj.put("autor",chat.getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname",""));

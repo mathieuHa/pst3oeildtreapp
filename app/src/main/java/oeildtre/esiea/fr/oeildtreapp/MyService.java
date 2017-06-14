@@ -42,6 +42,13 @@ public class MyService extends Service {
         public void call(final Object... args) {
             try {
                 if (getSharedPreferences("MyPref", MODE_PRIVATE).getInt("position", -1) != 0) {
+                    if (!getBaseContext().getSharedPreferences("MyPref",MODE_PRIVATE).getString("Vibreur","").equals("N")) {
+                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        v.vibrate(500);
+                        ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
+                        toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
+
+                    }
                     Log.i("MyService", args[0].toString());
                     JSONObject data = new JSONObject(args[0].toString());
                     username = data.getString("autor");
@@ -96,7 +103,7 @@ public class MyService extends Service {
 
     {
         try {
-            mSocket = IO.socket("http://oeildtcam.hanotaux.fr:8080");
+            mSocket = IO.socket(GraphService.getChat());
         } catch (URISyntaxException e) {
             e.getStackTrace();
         }

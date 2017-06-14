@@ -287,6 +287,7 @@ public class MainActivity extends AppCompatActivity {
                         return connec.getResponseMessage();
                     }
                 }
+                else return "You're already connected";
             } catch (Exception e1) {
                 e1.printStackTrace();
             }

@@ -126,7 +126,7 @@ public class Tchat extends Fragment {
     private Socket mSocket;
     {
         try {
-            mSocket = IO.socket("http://oeildtcam.hanotaux.fr:8080");
+            mSocket = IO.socket(GraphService.getChat());
         } catch (URISyntaxException e) {
             e.getStackTrace();
         }
