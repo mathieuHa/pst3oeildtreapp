@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
                         return connec.getResponseMessage();
                     }
                 }
-                else return "You're already connected";
+                else return "";
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
@@ -295,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
         }
             @Override
         protected void onPostExecute(String result) {
-            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
+            if(!result.equals(""))Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
             Intent intent = new Intent(MainActivity.this, MyService.class);
             startService(intent);
         }

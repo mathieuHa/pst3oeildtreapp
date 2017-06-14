@@ -34,9 +34,8 @@ import static android.app.PendingIntent.FLAG_ONE_SHOT;
 public class MyService extends Service {
     public static final String KEY_TEXT_REPLY = "key_text_reply";
     public static final int NOTIFICATION_ID= 99999;
+    private static Socket mSocket;
     String username,message;
-    private Socket mSocket;
-    private NotificationManager notificationManager;
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -112,13 +111,13 @@ public class MyService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        mSocket.on("message", onNewMessage);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mSocket.connect();
-        mSocket.on("message", onNewMessage);
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override

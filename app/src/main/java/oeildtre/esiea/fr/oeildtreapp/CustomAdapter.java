@@ -173,7 +173,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
                             obj.put("token",chat.getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Token",""));
                             obj.put("id",chat.getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserId",""));
                             obj.put("color",chat.getContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("UserColor",""));
-                            mSocket.emit("message",obj);
+                            mSocket.emit("message",obj.toString());
                             mSocket.disconnect();
                         } catch (JSONException | URISyntaxException e) {
                             e.printStackTrace();

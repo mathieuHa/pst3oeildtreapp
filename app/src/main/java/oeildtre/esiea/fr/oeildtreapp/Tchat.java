@@ -49,6 +49,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 import static android.content.Context.MODE_PRIVATE;
@@ -332,7 +334,7 @@ public class Tchat extends Fragment {
             viewHolder.text.setTextColor(Color.GRAY);
             viewHolder.text.setOnClickListener(null);
             viewHolder.text.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
-            if (message.msg.contains(".jpg") || message.msg.contains(".com") || message.msg.contains(".fr")) {
+            if ((message.msg.contains(".jpg") || message.msg.contains(".com") || message.msg.contains(".fr")) && message.msg.contains("www")) {
                 viewHolder.text.setTextColor(Color.parseColor("#8be2ff"));
                 viewHolder.text.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
                 final TweetViewHolder finalViewHolder = viewHolder;
@@ -340,6 +342,17 @@ public class Tchat extends Fragment {
                     @Override
                     public void onClick(View v) {
                         String str = finalViewHolder.text.getText().toString();
+
+                        Pattern p = Pattern.compile("(?:^|[\\W])((ht|f)tp(s?):\\/\\/|www\\.)"
+                                        + "(([\\w\\-]+\\.){1,}?([\\w\\-.~]+\\/?)*"
+                                        + "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)",
+                                Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+                        Matcher m = p.matcher(str);//replace with string to compare
+                        if(m.find()) {
+                            Log.i("url","String contains URL");
+                            str = str.substring(m.start(1), m.end(0));
+                        }
+                        Log.e("Url",str);
                         if (!finalViewHolder.text.getText().toString().contains("http"))
                             str = "http://" + finalViewHolder.text.getText().toString();
                         String url = str;
@@ -355,7 +368,6 @@ public class Tchat extends Fragment {
 
             return convertView;
         }
-
         private class TweetViewHolder {
             private TextView pseudo;
             private TextView text;
