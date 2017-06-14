@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -53,6 +54,12 @@ public class Medias extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.medias, container, false);
+
+        SharedPreferences Properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = Properties.edit();
+        editor.putInt("position", 5);
+        editor.commit();
+
         rootView.setTag(TAG);
         my = (RadioButton) rootView.findViewById(R.id.my);
         all = (RadioButton) rootView.findViewById(R.id.all);

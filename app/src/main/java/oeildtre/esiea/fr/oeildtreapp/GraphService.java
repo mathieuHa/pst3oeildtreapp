@@ -69,11 +69,11 @@ public class GraphService extends IntentService {
         context.startService(intent);
     }
 
-    public String getApi() { return api; }
-    public String getStream() {
+    public static String getApi() { return api; }
+    public static String getStream() {
         return stream;
     }
-    public String getMedia() {
+    public static String getMedia() {
         return media;
     }
 

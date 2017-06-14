@@ -45,6 +45,11 @@ public class Camera extends Fragment {
                              Bundle savedInstanceState) {
 
         View cam = inflater.inflate(R.layout.camera, container, false);
+        SharedPreferences Properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = Properties.edit();
+        editor.putInt("position", 4);
+        editor.commit();
+
         webView = (WebView) cam.findViewById(R.id.webView);
         webView.loadUrl(gs.getStream()+":8090/?action=stream");
         left = (ImageButton) cam.findViewById(R.id.left);

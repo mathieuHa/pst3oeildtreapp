@@ -40,6 +40,12 @@ public class Connexion extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View conn = inflater.inflate(R.layout.connexion, container, false);
+
+        SharedPreferences Properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = Properties.edit();
+        editor.putInt("position", 6);
+        editor.commit();
+
         final LinearLayout first = (LinearLayout) conn.findViewById(R.id.first);
         final LinearLayout second = (LinearLayout) conn.findViewById(R.id.second);
 
@@ -201,7 +207,7 @@ public class Connexion extends Fragment {
                             new InputStreamReader(
                                     connec.getInputStream()));
                     StringBuffer sb = new StringBuffer("");
-                    String line="";
+                    String line;
 
                     while((line = in.readLine()) != null) {
 
@@ -286,7 +292,7 @@ public class Connexion extends Fragment {
                             new InputStreamReader(
                                     connec.getInputStream()));
                     StringBuffer sb = new StringBuffer("");
-                    String line="";
+                    String line;
 
                     while((line = in.readLine()) != null) {
 

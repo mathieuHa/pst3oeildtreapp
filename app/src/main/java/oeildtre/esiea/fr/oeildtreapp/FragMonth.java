@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -28,6 +29,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class FragMonth extends Fragment {
@@ -68,6 +71,11 @@ public class FragMonth extends Fragment {
                              Bundle savedInstanceState) {
 
         View month = inflater.inflate(R.layout.graphe_month, container, false);
+
+        SharedPreferences Properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = Properties.edit();
+        editor.putInt("position", 2);
+        editor.commit();
 
         GraphService.startActionFoo(getContext(), "sensors", "month");
         IntentFilter inF = new IntentFilter(UPDATES_SENSOR2);

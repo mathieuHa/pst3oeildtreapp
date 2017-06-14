@@ -2,7 +2,6 @@ package oeildtre.esiea.fr.oeildtreapp;
 
 
 import android.Manifest;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -39,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
-    private String[] mNavigationDrawerItemTitles;
+    //private String[] mNavigationDrawerItemTitles;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private CharSequence mTitle;
@@ -60,10 +59,12 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()){
             case R.id.connexion:
-                fragmentManager.beginTransaction().replace(R.id.content_frame, new Connexion()).commit();
+                selectItem(6);
+                //fragmentManager.beginTransaction().replace(R.id.content_frame, new Connexion()).commit();
                 return true;
             case R.id.action_settings:
-                fragmentManager.beginTransaction().replace(R.id.content_frame, new Option()).commit();
+                selectItem(7);
+                //fragmentManager.beginTransaction().replace(R.id.content_frame, new Option()).commit();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -74,10 +75,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},1);
+
         new SendSignInRequest().execute();
 
         mTitle = getTitle();
-        mNavigationDrawerItemTitles = getResources().getStringArray(R.array.navigation_drawer_items_array);
+        //mNavigationDrawerItemTitles = getResources().getStringArray(R.array.navigation_drawer_items_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         SharedPreferences settings = getSharedPreferences("MyPref", MODE_PRIVATE);
@@ -104,10 +106,13 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         setupDrawerToggle();
+
+        int position;
+        if ((position = getSharedPreferences("MyPref",MODE_PRIVATE).getInt("position",-1)) != -1) selectItem(position);
     }
 
     private void selectItem(int position) {
-        Fragment fragment = null;
+        Fragment fragment=null;
         switch (position) {
             case 0:
                 fragment = new Tchat();
@@ -127,15 +132,21 @@ public class MainActivity extends AppCompatActivity {
             case 5:
                 fragment = new Medias();
                 break;
+            case 6:
+                fragment = new Connexion();
+                break;
+            case 7:
+                fragment = new Option();
+                break;
             default:
                 break;
         }
         if (fragment != null) {
             fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
-            mDrawerList.setItemChecked(position, true);
-            mDrawerList.setSelection(position);
-            setTitle(mNavigationDrawerItemTitles[position]);
+            //mDrawerList.setItemChecked(position, true);
+            //mDrawerList.setSelection(position);
+            //setTitle(mNavigationDrawerItemTitles[position]);
             mDrawerLayout.closeDrawer(mDrawerList);
         } else {
             Log.e("MainActivity", "Error in creating fragment");
@@ -219,65 +230,71 @@ public class MainActivity extends AppCompatActivity {
         protected String doInBackground(String... params) {
 
             try {
-                //Init JSON and url de destination
-                URL url = new URL("https://oeildtapi.hanotaux.fr/api/auth-tokens");
-                //Init la connexion à l'API
-                HttpsURLConnection connec = (HttpsURLConnection) url.openConnection();
-                connec.setReadTimeout(15000);
-                connec.setConnectTimeout(15000);
-                connec.setRequestMethod("POST");
-                connec.setDoInput(true);
-                connec.setDoOutput(true);
-                //On lache la sauce
-                OutputStream os = connec.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                writer.write(getPostDataString(postDataParams));
+                URL url2verif = new URL(GraphService.getApi() + "/sensors");
+                HttpsURLConnection connection = (HttpsURLConnection) url2verif.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("X-Auth-Token", getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE).getString("Token", "xx"));
+                connection.connect();
+                if (HttpsURLConnection.HTTP_OK != connection.getResponseCode()) {
+                    //Init JSON and url de destination
+                    URL url = new URL(GraphService.getApi() + "/auth-tokens");
+                    //Init la connexion à l'API
+                    HttpsURLConnection connec = (HttpsURLConnection) url.openConnection();
+                    connec.setReadTimeout(15000);
+                    connec.setConnectTimeout(15000);
+                    connec.setRequestMethod("POST");
+                    connec.setDoInput(true);
+                    connec.setDoOutput(true);
+                    //On lache la sauce
+                    OutputStream os = connec.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                    writer.write(getPostDataString(postDataParams));
 
-                writer.flush();
-                writer.close();
-                os.close();
-                int responseCode = connec.getResponseCode();
+                    writer.flush();
+                    writer.close();
+                    os.close();
+                    int responseCode = connec.getResponseCode();
 
-                if (responseCode == 201) {
-                    Log.e("token3", "Jusque la ca va !");
-                    BufferedReader in = new BufferedReader(
-                            new InputStreamReader(
-                                    connec.getInputStream()));
-                    StringBuffer sb = new StringBuffer("");
-                    String line = "";
+                    if (responseCode == 201) {
+                        Log.e("token3", "Jusque la ca va !");
+                        BufferedReader in = new BufferedReader(
+                                new InputStreamReader(
+                                        connec.getInputStream()));
+                        StringBuffer sb = new StringBuffer("");
+                        String line = "";
 
-                    while (null != (line = in.readLine())) {
+                        while (null != (line = in.readLine())) {
 
-                        sb.append(line);
-                        break;
-                    }
-                    String result = sb.toString();
-                    Log.e("token", result);
-                    in.close();
-                    JSONObject resultat = new JSONObject(result);
+                            sb.append(line);
+                            break;
+                        }
+                        String result = sb.toString();
+                        Log.e("token", result);
+                        in.close();
+                        JSONObject resultat = new JSONObject(result);
 
 //Initialise tes préférences
-                    SharedPreferences Properties = getSharedPreferences("MyPref", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = Properties.edit();
-                    editor.putString("Token", resultat.getString("value"));
-                    editor.putString("UserId", resultat.getJSONObject("user").getString("id"));
-                    editor.putString("Sname", resultat.getJSONObject("user").getString("login"));
-                    editor.putString("UserColor", resultat.getJSONObject("user").getString("color"));
+                        SharedPreferences Properties = getSharedPreferences("MyPref", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = Properties.edit();
+                        editor.putString("Token", resultat.getString("value"));
+                        editor.putString("UserId", resultat.getJSONObject("user").getString("id"));
+                        editor.putString("Sname", resultat.getJSONObject("user").getString("login"));
+                        editor.putString("UserColor", resultat.getJSONObject("user").getString("color"));
 
-                    editor.commit();
-                    return "You're connected as " + getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", "");
-                } else {
-                    return connec.getResponseMessage();
+                        editor.commit();
+                        return "You're connected as " + getSharedPreferences("MyPref", MODE_PRIVATE).getString("Sname", "");
+                    } else {
+                        return connec.getResponseMessage();
+                    }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception e1) {
+                e1.printStackTrace();
             }
             return "Error";
         }
-        @Override
+            @Override
         protected void onPostExecute(String result) {
             Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             Intent intent = new Intent(MainActivity.this, MyService.class);
             startService(intent);
         }

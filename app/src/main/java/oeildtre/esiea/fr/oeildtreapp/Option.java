@@ -52,6 +52,11 @@ public class Option extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View option = inflater.inflate(R.layout.option, container, false);
+        SharedPreferences Properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = Properties.edit();
+        editor.putInt("position", 7);
+        editor.commit();
+
         back2 = (ImageButton) option.findViewById(R.id.back2);
         param = (LinearLayout) option.findViewById(R.id.param);
         color = (LinearLayout) option.findViewById(R.id.color);

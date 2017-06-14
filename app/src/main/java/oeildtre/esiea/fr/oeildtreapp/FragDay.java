@@ -3,6 +3,7 @@ package oeildtre.esiea.fr.oeildtreapp;
 
 
 import android.app.DatePickerDialog;
+import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -29,6 +30,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class FragDay extends Fragment {
@@ -68,6 +71,11 @@ public class FragDay extends Fragment {
         IntentFilter inF = new IntentFilter(UPDATES_SENSORS1);
         us = new UpdateSensor();
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(us, inF);
+
+        SharedPreferences Properties = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = Properties.edit();
+        editor.putInt("position", 1);
+        editor.commit();
 
         IntentFilter inFi = new IntentFilter(UPDATES_DATA1);
         ud = new UpdateData();
