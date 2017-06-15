@@ -53,10 +53,8 @@ public class MyService extends Service {
                     username = data.getString("autor");
                     message = data.getString("msg");
 
-
-                    String replyLabel = "Reply";
                     RemoteInput remoteInput = new RemoteInput.Builder(KEY_TEXT_REPLY)
-                            .setLabel(replyLabel)
+                            .setLabel("Reply")
                             .build();
 
                     Intent resultIntent = new Intent(getApplicationContext(), NotifacationActivity.class);
@@ -74,7 +72,7 @@ public class MyService extends Service {
 
                     // Add to your action, enabling Direct reply for it
                     NotificationCompat.Action action =
-                            new NotificationCompat.Action.Builder(R.drawable.logo_mini, replyLabel, resultPendingIntent)
+                            new NotificationCompat.Action.Builder(R.drawable.logo_mini, "Reply", resultPendingIntent)
                                     .addRemoteInput(remoteInput)
                                     .setAllowGeneratedReplies(true)
                                     .build();
